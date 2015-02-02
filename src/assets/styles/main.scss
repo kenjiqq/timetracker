@@ -1,0 +1,39 @@
+@charset "UTF-8";
+
+@import "bootstrap";
+
+.calendar {
+}
+
+.day-column {
+    border: 1px solid grey;
+    border-left: none;
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    .header {
+        text-align: center;
+    }
+
+    &:first-child {
+        border-left: 1px solid grey;
+    }
+    .day {
+        flex: 1;
+        padding: 4px;
+        &.drop-target {
+            padding: 0;
+            border: dashed 4px #29e;
+        }
+    }
+}
+.week {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    height: 500px;
+}
+
+.timebox {
+
+}
