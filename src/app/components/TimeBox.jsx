@@ -70,14 +70,14 @@ var TimeBox = React.createClass({
         }.bind(this))
     },
     render: function() {
-        var x = this.state.posX ? this.state.posX : 0,
-            y = this.state.posY ? this.state.posY : this.props.timeSlot.startHour * hourSize,
+        var x = this.state.posX !== undefined ? this.state.posX : 0,
+            y = this.state.posY !== undefined ? this.state.posY : this.props.timeSlot.startHour * hourSize,
             translateString = 'translate(' + x + 'px, ' + y + 'px)';
         var style = {
             backgroundColor: this.props.timeSlot.color ? this.props.timeSlot.color : 'red',
             WebkitTransform: translateString,
             transform: translateString,
-            height: this.state.height ? this.state.height : this.props.timeSlot.duration * hourSize
+            height: this.state.height !== undefined ? this.state.height : this.props.timeSlot.duration * hourSize
         }
         return (
             <li className="timebox" ref="box" style={style} data-id={this.props.timeSlot.id} data-date={this.props.date} />
