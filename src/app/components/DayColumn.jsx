@@ -38,8 +38,9 @@ var DayColumn = React.createClass({
     render: function() {
         if(this.props.timeSlots) {
             var timeNodes = this.props.timeSlots.map(function (timeSlot) {
+                var project = this.props.projects[(timeSlot.project)];
                 return (
-                    <TimeBox key={timeSlot.id} date={this.props.date} timeSlot={timeSlot} />
+                    <TimeBox key={timeSlot.id} date={this.props.date} timeSlot={timeSlot} color={project.color} />
                 );
             }.bind(this));
         }
