@@ -3,22 +3,44 @@
 @import "bootstrap";
 
 .calendar {
+    display: flex;
+    padding: 10px;
+    .hours-labels {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        padding-top: 50px;
+        margin-top: -7px;
+        > span {
+            height: 50px;
+        }
+    }
+    .week {
+        flex: 1;
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        height: 2460px;
+    }
 }
 
 .day-column {
     border: 1px solid grey;
     border-left: none;
+    flex: 1;
     display: flex;
     flex-direction: column;
     width: 150px;
     .header {
         text-align: center;
+        height: 30px;
     }
 
     &:first-child {
         border-left: 1px solid grey;
     }
     .day {
+        border-top: 1px solid grey;
         flex: 1;
         padding: 4px;
         &.drop-target {
@@ -26,12 +48,6 @@
             border: dashed 4px #29e;
         }
     }
-}
-.week {
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-    height: 500px;
 }
 
 .timebox {
