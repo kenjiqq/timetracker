@@ -8,13 +8,14 @@ var DayColumn = React.createClass({
     getInitialState: function() {
         return {
             dropTarget: false,
+            hourSize: 50
         };
     },
     componentDidMount: function () {
         var element = this.refs.day.getDOMNode();
         interact(element)
         .dropzone({
-            accept: '.timebox',
+            accept: ['.timebox', '.project'],
             ondragenter: function (event) {
                 this.setState({
                     dropTarget: true
@@ -26,12 +27,25 @@ var DayColumn = React.createClass({
                 });
             }.bind(this),
             ondrop: function (event) {
-                var droppedTimeSlotId = parseInt(event.relatedTarget.getAttribute('data-id'));
-                var droppedTimeSlotDate = event.relatedTarget.getAttribute('data-date');
+                switch (event.relatedTarget.getAttribute('data-type')) {
+                    case 'timebox':
+                        var timeSlotId = parseInt(event.relatedTarget.getAttribute('data-id'));
+                        var droppedTimeSlotDate = event.relatedTarget.getAttribute('data-date');
+                        TimeSlotActions.moveDay(timeSlotId, droppedTimeSlotDate, this.props.date);
+                        break;
+                    case 'project':
+                        var project = event.relatedTarget.getAttribute('data-id');
+                        var zoneRect = event.target.getBoundingClientRect(),
+                            dropRect = event.relatedTarget.getBoundingClientRect(),
+                            offset   = dropRect.top - zoneRect.top,
+                            duration = parseInt(offset / this.state.hourSize);
+
+                        TimeSlotActions.addTimeSlot(project, this.props.date, duration, 1);
+                        break;
+                }
                 this.setState({
                     dropTarget: false
                 });
-                TimeSlotActions.moveDay(droppedTimeSlotId, droppedTimeSlotDate, this.props.date);
             }.bind(this)
         })
     },
@@ -40,7 +54,7 @@ var DayColumn = React.createClass({
             var timeNodes = this.props.timeSlots.map(function (timeSlot) {
                 var project = this.props.projects[(timeSlot.project)];
                 return (
-                    <TimeBox key={timeSlot.id} date={this.props.date} timeSlot={timeSlot} color={project.color} />
+                    <TimeBox key={timeSlot.id} date={this.props.date} timeSlot={timeSlot} color={project.color} name={project.name} hourSize={this.state.hourSize}/>
                 );
             }.bind(this));
         }

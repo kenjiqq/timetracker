@@ -2,7 +2,12 @@
 
 @import "bootstrap";
 
+.app {
+    display: flex;
+}
+
 .calendar {
+    flex: 1;
     display: flex;
     padding: 10px;
     .hours-labels {
@@ -43,6 +48,7 @@
         border-top: 1px solid grey;
         flex: 1;
         padding: 4px;
+        position: relative;
         &.drop-target {
             padding: 0;
             border: dashed 4px #29e;
@@ -51,5 +57,28 @@
 }
 
 .timebox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
 
+.projects {
+    $projectsSpace: 10px;
+    padding: $projectsSpace;
+    border-right: 1px solid grey;
+    .header {
+        text-align: center;
+        border-bottom: 1px solid grey;
+        margin: {
+            left: -$projectsSpace;
+            right: -$projectsSpace;
+        }
+
+    }
+    .project-list {
+        .project {
+            padding: 10px;
+        }
+    }
 }

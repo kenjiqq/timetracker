@@ -24,6 +24,15 @@ var TimeSlotActions = McFly.createActions({
             id: id,
             startHour: newStart
         };
+    },
+    addTimeSlot: function(projectId, date, startHour, duration) {
+        return {
+            actionType: 'ADD_TIME_SLOT',
+            project: projectId,
+            date: date,
+            startHour: startHour,
+            duration: duration
+        };
     }
 });
 
