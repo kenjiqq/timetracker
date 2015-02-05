@@ -68,7 +68,10 @@ var DayColumn = React.createClass({
         });
         return (
             <li className="day-column">
-                <h4 className="header">{this.props.day}</h4>
+                <div className="header">
+                    <div>{this.props.day}</div>
+                    <div>{this.props.date}</div>
+                </div>
                 <ul className={classes} ref="day">
                     {timeNodes}
                 </ul>

@@ -6,7 +6,7 @@ var ProjectList = React.createClass({
     render: function() {
         var projectNodes = this.props.projects.map(function (project) {
             return (
-                <ProjectItem project={project} />
+                <ProjectItem key={project.code} project={project} />
             );
         }.bind(this));
 
