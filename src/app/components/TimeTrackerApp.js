@@ -1,11 +1,11 @@
 'use strict';
-var React = require('react'),
-    CalendarSection = require('./CalendarSection'),
-    ProjectSection = require('./ProjectSection');
 
-var TimeTrackerApp = React.createClass({
+import React from 'react';
+import CalendarSection from './CalendarSection';
+import ProjectSection from './ProjectSection';
 
-    render: function() {
+export default class TimeTrackerApp extends React.Component {
+    render() {
         return (
             <div className="app">
                 <ProjectSection />
@@ -13,6 +13,4 @@ var TimeTrackerApp = React.createClass({
             </div>
         );
     }
-});
-
-module.exports = TimeTrackerApp;
+}

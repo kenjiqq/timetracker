@@ -1,9 +1,10 @@
 'use strict';
 
-var React = require('react'),
-    TimeTrackerApp = require('./components/TimeTrackerApp');
-    
-React.render(
+import React from 'react';
+import ReactDOM from 'react-dom';
+import TimeTrackerApp from './components/TimeTrackerApp';
+
+ReactDOM.render(
     <TimeTrackerApp />,
     document.getElementById('app')
 );

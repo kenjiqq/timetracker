@@ -1,25 +1,24 @@
-var React = require('react'),
-    ProjectList = require('./ProjectList'),
-    ProjectStore = require('../stores/ProjectStore');
+import React from 'react';
+import ProjectList from './ProjectList';
+import ProjectStore from '../stores/ProjectStore';
 
 function getStoreState() {
-    var projects = ProjectStore.getList();
     return {
-        projects: projects
-    }
+        projects: ProjectStore.getList()
+    };
 }
 
 var ProjectSection = React.createClass({
     mixins: [ProjectStore.mixin],
-    getInitialState: function() {
+    getInitialState() {
         return getStoreState();
     },
 
-    storeDidChange: function() {
+    storeDidChange() {
         this.setState(getStoreState());
     },
 
-    render: function() {
+    render() {
         return (
             <ProjectList projects={this.state.projects} />
         );

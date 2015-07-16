@@ -1,25 +1,22 @@
-var React = require('react'),
-    ProjectItem = require('./ProjectItem');
+import React from 'react';
+import ProjectItem from './ProjectItem';
 
-var ProjectList = React.createClass({
-
-    render: function() {
-        var projectNodes = this.props.projects.map(function (project) {
+export default class ProjectList extends React.Component {
+    renderProjects() {
+        return this.props.projects.map((project) => {
             return (
                 <ProjectItem key={project.code} project={project} />
             );
-        }.bind(this));
-
+        });
+    }
+    render() {
         return (
             <div className="projects">
                 <h4 className="header">Projects</h4>
                 <ul className="project-list list-unstyled">
-                    {projectNodes}
+                    {this.renderProjects()}
                 </ul>
             </div>
         );
     }
-
-});
-
-module.exports = ProjectList;
+}
