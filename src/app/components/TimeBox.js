@@ -1,7 +1,8 @@
 'use strict';
 
 var React = require('react'),
-    TimeSlotActions = require('../actions/TimeSlotActions');
+    TimeSlotActions = require('../actions/TimeSlotActions'),
+    interact = require('interact.js');
 
 var TimeBox = React.createClass({
     getInitialState: function() {

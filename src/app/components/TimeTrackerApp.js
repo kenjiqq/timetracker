@@ -15,4 +15,4 @@ var TimeTrackerApp = React.createClass({
     }
 });
 
-module.exports = TimeTrackerApp
+module.exports = TimeTrackerApp;

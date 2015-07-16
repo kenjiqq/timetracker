@@ -2,7 +2,8 @@
 
 var React = require('react/addons'),
     TimeBox = require('./TimeBox'),
-    TimeSlotActions = require('../actions/TimeSlotActions');
+    TimeSlotActions = require('../actions/TimeSlotActions'),
+    interact = require('interact.js');
 
 var DayColumn = React.createClass({
     getInitialState: function() {
@@ -47,7 +48,7 @@ var DayColumn = React.createClass({
                     dropTarget: false
                 });
             }.bind(this)
-        })
+        });
     },
     render: function() {
         if(this.props.timeSlots) {

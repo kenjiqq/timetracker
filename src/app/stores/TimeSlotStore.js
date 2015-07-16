@@ -1,6 +1,7 @@
 'use strict';
 
-var McFly = require('../flux/McFly');
+var McFly = require('../flux/McFly'),
+    moment = require('moment');
 
 var _timeSlots = {};
 var _timeSlotById = {};
@@ -19,7 +20,7 @@ function addTimeSlot(date, project, start, duration) {
         startHour: start,
         duration: duration,
         project: project
-    }
+    };
     _timeSlotById[timeslot.id] = timeslot;
     addToList(date, timeslot);
 }

@@ -14,8 +14,4 @@
   "quotmark": "single",
   "undef": true,
   "strict": true,
-  "globals": {
-    "$": false,
-    "moment": false
-  }
 }

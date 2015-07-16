@@ -1,4 +1,5 @@
-var React = require('react');
+var React = require('react'),
+    interact = require('interact.js');
 
 var ProjectItem = React.createClass({
     getInitialState: function () {
@@ -30,7 +31,7 @@ var ProjectItem = React.createClass({
             backgroundColor: this.props.project.color,
             WebkitTransform: translateString,
             transform: translateString,
-        }
+        };
         return (
             <li key={this.props.project.code} ref="item" className="project" style={style} data-id={this.props.project.code} data-type="project">
                 <span>{this.props.project.name}</span>
