@@ -1,13 +1,8 @@
 'use strict';
+import {ADD_PROJECT} from '../constants/actionTypes';
 
-var McFly = require('../flux/McFly');
-
-var ProjectActions = McFly.createActions({
-    addProject: function() {
-        return {
-            actionType: 'ADD_PROJECT'
-        };
-    }
-});
-
-module.exports = ProjectActions;
+export function addProject() {
+    return {
+        type: ADD_PROJECT
+    };
+}

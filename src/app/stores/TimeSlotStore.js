@@ -1,79 +1,57 @@
 'use strict';
+import {ADD_TIME_SLOT, MOVE_TIME_SLOT, SET_DURATION_TIME_SLOT, SET_START_HOUR_TIME_SLOT} from '../constants/ActionTypes';
+import moment from 'moment';
 
-var McFly = require('../flux/McFly'),
-    moment = require('moment');
-
-var _timeSlots = {};
-var _timeSlotById = {};
-
-function addToList(date, timeslot) {
-    if (_timeSlots[date]) {
-        _timeSlots[date].push(timeslot);
-    } else {
-        _timeSlots[date] = [timeslot];
-    }
-}
-
-function addTimeSlot(date, project, start, duration) {
-    var timeslot = {
+function createTimeSlot({project, start, duration}) {
+    return {
         id: Date.now(),
-        startHour: start,
-        duration: duration,
-        project: project
+        project,
+        start,
+        duration
     };
-    _timeSlotById[timeslot.id] = timeslot;
-    addToList(date, timeslot);
 }
 
-function moveTimeSlot(id, from, to) {
-    var fromDaySlots = _timeSlots[from];
-    for (var i = 0; i < fromDaySlots.length; i++) {
-        if (fromDaySlots[i].id === id) {
-            var timeslot = fromDaySlots.splice(i, 1);
-            addToList(to, timeslot[0]);
-            break;
-        }
-    }
-}
+const initialState = {
+    [moment().format('DD-MM-YYYY')]: [{
+        id: Date.now(),
+        project: 'P0000NOE',
+        start: 1,
+        duration: 1.5
+    }]
+};
 
-function setDuration(id, duration) {
-    _timeSlotById[id].duration = duration;
-}
-
-function setStartHour(id, startHour) {
-    _timeSlotById[id].startHour = startHour;
-}
-
-addTimeSlot(moment().format('DD-MM-YYYY'), 'P0000NOE', 1, 1.5);
-
-var TimeSlotStore = McFly.createStore({
-    getTimeSlotsForDate: function(date) {
-        if (_timeSlots[date]) {
-            return _timeSlots[date];
-        } else {
-            return [];
-        }
-    }
-}, function(payload) {
-    switch (payload.actionType) {
-        case 'ADD_TIME_SLOT':
-            addTimeSlot(payload.date, payload.project, payload.startHour, payload.duration);
-            break;
-        case 'MOVE_TIME_SLOT':
-            moveTimeSlot(payload.id, payload.from, payload.to);
-            break;
-        case 'SET_DURATION_TIME_SLOT':
-            setDuration(payload.id, payload.duration);
-            break;
-        case 'SET_START_HOUR_TIME_SLOT':
-            setStartHour(payload.id, payload.startHour);
-            break;
+export default function timeSlots(state = initialState, action) {
+    switch (action.type) {
+        case ADD_TIME_SLOT:
+            const newSlot = createTimeSlot(action);
+            return {
+                ...state,
+                [action.date]: [...state[action.date] || [], newSlot]
+            };
+        case MOVE_TIME_SLOT:
+            return {
+                ...state,
+                [action.from]: state[action.from].filter(timeSlot => timeSlot.id !== action.id),
+                [action.to]: [
+                    {
+                        ...state[action.from].find(timeSlot => timeSlot.id === action.id),
+                        start: action.start
+                    },
+                    ...state[action.to] || []
+                ]
+            }
+            //return moveTimeSlot(action.id, action.from, action.to);
+        case SET_DURATION_TIME_SLOT:
+            return {
+                ...state,
+                [action.date]: state[action.date].map(timeSlot => timeSlot.id !== action.id ? timeSlot : {...timeSlot, duration: action.duration})
+            }
+        case SET_START_HOUR_TIME_SLOT:
+            return {
+                ...state,
+                [action.date]: state[action.date].map(timeSlot => timeSlot.id === action.id ? {...timeSlot, start: action.startHour} : timeSlot)
+            }
         default:
-            return true;
+            return state;
     }
-
-    TimeSlotStore.emitChange();
-    return true;
-});
-
-module.exports = TimeSlotStore;
+}

@@ -7,6 +7,7 @@ var dev = true; //Temp
 
 var config = {
     entry: [
+        'babel-core/polyfill',
         './src/app/app',
         './src/assets/styles/main'
     ],

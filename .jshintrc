@@ -12,6 +12,5 @@
   "newcap": true,
   "noarg": true,
   "quotmark": "single",
-  "undef": true,
-  "strict": true,
+  "undef": true
 }

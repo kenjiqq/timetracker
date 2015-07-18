@@ -1,39 +1,40 @@
 'use strict';
+import {MOVE_TIME_SLOT, SET_DURATION_TIME_SLOT, SET_START_HOUR_TIME_SLOT, ADD_TIME_SLOT} from '../constants/Actiontypes';
 
-var McFly = require('../flux/McFly');
+export function moveDay(id, from, to, start) {
+    return {
+        type: MOVE_TIME_SLOT,
+        id,
+        to,
+        from,
+        start
+    };
+}
 
-var TimeSlotActions = McFly.createActions({
-    moveDay: function(id, from, to) {
-        return {
-            actionType: 'MOVE_TIME_SLOT',
-            id: id,
-            to: to,
-            from: from
-        };
-    },
-    setDuration: function (id, newDuration) {
-        return {
-            actionType: 'SET_DURATION_TIME_SLOT',
-            id: id,
-            duration: newDuration
-        };
-    },
-    setStartHour: function (id, newStart) {
-        return {
-            actionType: 'SET_START_HOUR_TIME_SLOT',
-            id: id,
-            startHour: newStart
-        };
-    },
-    addTimeSlot: function(projectId, date, startHour, duration) {
-        return {
-            actionType: 'ADD_TIME_SLOT',
-            project: projectId,
-            date: date,
-            startHour: startHour,
-            duration: duration
-        };
-    }
-});
+export function setDuration(id, date, duration) {
+    return {
+        type: SET_DURATION_TIME_SLOT,
+        id,
+        duration,
+        date
+    };
+}
 
-module.exports = TimeSlotActions;
+export function setStartHour(id, date, startHour) {
+    return {
+        type: SET_START_HOUR_TIME_SLOT,
+        id,
+        startHour,
+        date
+    };
+}
+
+export function addTimeSlot(project, date, start, duration) {
+    return {
+        type: ADD_TIME_SLOT,
+        project,
+        date,
+        start,
+        duration
+    };
+}

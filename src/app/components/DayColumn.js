@@ -1,16 +1,31 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes, Component } from 'react';
 import TimeBox from './TimeBox';
-import TimeSlotActions from '../actions/TimeSlotActions';
 import interact from 'interact.js';
 import classnames from 'classnames';
 
-export default class DayColumn extends React.Component {
+export default class DayColumn extends Component {
+    static propTypes = {
+        date: PropTypes.string.isRequired,
+        timeSlots: PropTypes.array.isRequired,
+        projects: PropTypes.array.isRequired,
+        name: PropTypes.string.isRequired,
+        actions: PropTypes.object.isRequired
+    }
+
     state = {
         dropTarget: false,
         hourSize: 50
     }
+
+    calcStartTime(dropEl, dragEl) {
+        const zoneRect = dragEl.getBoundingClientRect(),
+        dropRect = dropEl.getBoundingClientRect(),
+        offset = dropRect.top - zoneRect.top;
+        return parseInt(offset / this.state.hourSize);
+    }
+
     componentDidMount() {
         const element = this.refs.day;
         interact(element)
@@ -31,16 +46,14 @@ export default class DayColumn extends React.Component {
                     case 'timebox':
                         const timeSlotId = parseInt(event.relatedTarget.getAttribute('data-id'));
                         const droppedTimeSlotDate = event.relatedTarget.getAttribute('data-date');
-                        TimeSlotActions.moveDay(timeSlotId, droppedTimeSlotDate, this.props.date);
+                        if(droppedTimeSlotDate !== this.props.date) {
+                            this.props.actions.moveDay(timeSlotId, droppedTimeSlotDate, this.props.date, this.calcStartTime(event.relatedTarget,  event.target));
+                            event.dragEvent.stopImmediatePropagation();
+                        }
                         break;
                     case 'project':
                         const project = event.relatedTarget.getAttribute('data-id');
-                        const zoneRect = event.target.getBoundingClientRect(),
-                            dropRect = event.relatedTarget.getBoundingClientRect(),
-                            offset   = dropRect.top - zoneRect.top,
-                            duration = parseInt(offset / this.state.hourSize);
-
-                        TimeSlotActions.addTimeSlot(project, this.props.date, duration, 1);
+                        this.props.actions.addTimeSlot(project, this.props.date, this.calcStartTime(event.relatedTarget, event.target), 1);
                         break;
                 }
                 this.setState({
@@ -49,16 +62,14 @@ export default class DayColumn extends React.Component {
             }
         });
     }
+
     render() {
-        let timeNodes;
-        if(this.props.timeSlots) {
-            timeNodes = this.props.timeSlots.map((timeSlot) => {
-                const project = this.props.projects[(timeSlot.project)];
-                return (
-                    <TimeBox key={timeSlot.id} date={this.props.date} timeSlot={timeSlot} {...project} hourSize={this.state.hourSize}/>
-                );
-            });
-        }
+        const timeNodes = this.props.timeSlots.map((timeSlot) => {
+            const project = this.props.projects.find(project => timeSlot.project === project.code);
+            return (
+                <TimeBox key={timeSlot.id} date={this.props.date} timeSlot={timeSlot} {...project} hourSize={this.state.hourSize} actions={this.props.actions} />
+            );
+        });
 
         //Set classes
         const classes = classnames({
@@ -69,7 +80,7 @@ export default class DayColumn extends React.Component {
         return (
             <li className="day-column">
                 <div className="header">
-                    <div>{this.props.day}</div>
+                    <div>{this.props.name}</div>
                     <div>{this.props.date}</div>
                 </div>
                 <ul className={classes} ref="day">

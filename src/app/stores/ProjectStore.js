@@ -1,42 +1,26 @@
 'use strict';
 
-var McFly = require('../flux/McFly');
+import {ADD_PROJECT} from '../constants/ActionTypes';
 
-var _projects = {},
-    _projectList = [];
-
-function addProject(project) {
-    _projects[project.code] = project;
-    _projectList.push(project);
-}
-
-addProject({
+const initialState = [{
     code: 'P0000NOE',
     color: 'green',
     name: 'SmartBank'
-});
+}];
 
-var ProjectStore = McFly.createStore({
-    get: function(code) {
-        return _projects[code];
-    },
-    getAll: function () {
-        return _projects;
-    },
-    getList: function () {
-        return _projectList;
+export default function projects(state = initialState, action) {
+    switch (action.type) {
+    case ADD_PROJECT:
+        const {code, color, name} = action;
+        return [
+            {
+                code,
+                color,
+                name
+            },
+            ...state
+        ];
+    default:
+        return state;
     }
-}, function(payload) {
-    switch (payload.actionType) {
-        case 'ADD_PROJECT':
-            addProject(payload);
-            break;
-        default:
-            return true;
-    }
-
-    ProjectStore.emitChange();
-    return true;
-});
-
-module.exports = ProjectStore;
+}

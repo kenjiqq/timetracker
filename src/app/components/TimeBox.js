@@ -1,10 +1,17 @@
 'use strict';
 
-import React from 'react';
-import TimeSlotActions from '../actions/TimeSlotActions';
+import React, { PropTypes, Component } from 'react';
 import interact from 'interact.js';
 
-export default class TimeBox extends React.Component {
+export default class TimeBox extends Component {
+    static propTypes = {
+        hourSize: PropTypes.number.isRequired,
+        timeSlot: PropTypes.object.isRequired,
+        color: PropTypes.string,
+        date: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        actions: PropTypes.object.isRequired
+    }
     state = {
         posX: undefined,
         posY: undefined,
@@ -27,12 +34,12 @@ export default class TimeBox extends React.Component {
                 ],
                 offset: 'startCoords'
             },
-            axis: 'y'
+            axis: 'y',
         })
         .on('dragstart', (event) => {
             this.setState({
                 posX: 0,
-                posY: this.props.timeSlot.startHour * this.props.hourSize
+                posY: this.props.timeSlot.start * this.props.hourSize
             });
         })
         .on('dragmove', (event) => {
@@ -42,7 +49,7 @@ export default class TimeBox extends React.Component {
             });
         })
         .on('dragend', (event) => {
-            TimeSlotActions.setStartHour(this.props.timeSlot.id, this.state.posY / this.props.hourSize);
+            this.props.actions.setStartHour(this.props.timeSlot.id, this.props.date, this.state.posY / this.props.hourSize);
             this.setState({
                 posX: undefined,
                 posY: undefined
@@ -59,15 +66,17 @@ export default class TimeBox extends React.Component {
             });
         })
         .on('resizeend', (event) => {
-            TimeSlotActions.setDuration(this.props.timeSlot.id, this.state.height / this.props.hourSize);
+            this.props.actions.setDuration(this.props.timeSlot.id, this.props.date, this.state.height / this.props.hourSize);
             this.setState({
                 height: undefined
             });
         })
+
     }
+
     render() {
         const x = this.state.posX !== undefined ? this.state.posX : 0,
-            y = this.state.posY !== undefined ? this.state.posY : this.props.timeSlot.startHour * this.props.hourSize,
+            y = this.state.posY !== undefined ? this.state.posY : this.props.timeSlot.start * this.props.hourSize,
             translateString = `translate(${x}px, ${y}px)`;
         const style = {
             backgroundColor: this.props.color ? this.props.color : 'red',

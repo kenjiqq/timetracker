@@ -1,29 +1,15 @@
 import React from 'react';
 import ProjectList from './ProjectList';
-import ProjectStore from '../stores/ProjectStore';
+import { connect } from 'redux/react';
 
-function getStoreState() {
-    return {
-        projects: ProjectStore.getList()
-    };
-}
-
-var ProjectSection = React.createClass({
-    mixins: [ProjectStore.mixin],
-    getInitialState() {
-        return getStoreState();
-    },
-
-    storeDidChange() {
-        this.setState(getStoreState());
-    },
-
+@connect(state => ({
+  projects: state.projects
+}))
+export default class ProjectSection extends React.Component {
     render() {
         return (
-            <ProjectList projects={this.state.projects} />
+            <ProjectList projects={this.props.projects} />
         );
     }
 
-});
-
-module.exports = ProjectSection;
+};
