@@ -4,12 +4,18 @@ import interact from 'interact.js';
 export default class ProjectItem extends React.Component {
     state = {
         posX: 0,
-        posY: 0
+        posY: 0,
+        dragging: false
     }
     componentDidMount() {
         const element = this.refs.item;
         interact(element)
         .draggable({})
+        .on('dragstart', (event) => {
+            this.setState({
+                dragging: true
+            })
+        })
         .on('dragmove', (event) => {
             this.setState({
                 posX: this.state.posX + event.dx,
@@ -19,7 +25,8 @@ export default class ProjectItem extends React.Component {
         .on('dragend', (event) => {
             this.setState({
                 posX: 0,
-                posY: 0
+                posY: 0,
+                dragging: false
             });
         });
     }
@@ -30,7 +37,8 @@ export default class ProjectItem extends React.Component {
         const style = {
             backgroundColor: project.color,
             WebkitTransform: translateString,
-            transform: translateString
+            transform: translateString,
+            zIndex:  this.state.dragging ? 2000 : undefined
         };
         return (
             <li key={project.code} ref="item" className="project" style={style} data-id={project.code} data-type="project">

@@ -1,5 +1,6 @@
 @charset "UTF-8";
 $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
+$halfHourSize: 54px;
 @import "~bootstrap-sass/assets/stylesheets/bootstrap";
 
 .app {
@@ -17,9 +18,9 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
         display: flex;
         flex-direction: column;
         padding-top: 50px;
-        margin-top: 75px;
+        margin-top: 70px;
         > span {
-            height: 50px;
+            height: $halfHourSize;
         }
     }
     .calendar {
@@ -30,7 +31,6 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
             display: flex;
             align-items: stretch;
             justify-content: center;
-            height: 2460px;
         }
     }
 }
@@ -57,6 +57,7 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
         flex: 1;
         padding: 4px;
         position: relative;
+        height: $halfHourSize * 48;
         &.drop-target {
             padding: 0;
             border: dashed 4px #29e;
@@ -70,6 +71,7 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
     left: 0;
     right: 0;
     overflow: hidden;
+
 }
 
 .projects {
@@ -87,6 +89,7 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
     }
     .project-list {
         .project {
+            position: relative;
             padding: 10px;
         }
     }

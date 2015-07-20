@@ -16,7 +16,7 @@ export default class DayColumn extends Component {
 
     state = {
         dropTarget: false,
-        hourSize: 54
+        hourSize: 108
     }
 
     calcStartTime(dropEl, dragEl) {

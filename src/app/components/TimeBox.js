@@ -15,14 +15,16 @@ export default class TimeBox extends Component {
     state = {
         posX: undefined,
         posY: undefined,
+        dragging: false
     }
+
     componentDidMount() {
         const element = this.refs.box;
         interact(element)
         .draggable({
             snap: {
                 targets: [
-                    interact.createSnapGrid({ x: 1, y: this.props.hourSize/2 })
+                    interact.createSnapGrid({ x: 1, y: this.props.hourSize/4 })
                 ],
                 offset: 'startCoords'
             },
@@ -30,7 +32,7 @@ export default class TimeBox extends Component {
         .resizable({
             snap: {
                 targets: [
-                    interact.createSnapGrid({ x: 1, y: this.props.hourSize/2 })
+                    interact.createSnapGrid({ x: 1, y: this.props.hourSize/4 })
                 ],
                 offset: 'startCoords'
             },
@@ -39,7 +41,8 @@ export default class TimeBox extends Component {
         .on('dragstart', (event) => {
             this.setState({
                 posX: 0,
-                posY: this.props.timeSlot.start * this.props.hourSize
+                posY: this.props.timeSlot.start * this.props.hourSize,
+                dragging: true
             });
         })
         .on('dragmove', (event) => {
@@ -47,12 +50,14 @@ export default class TimeBox extends Component {
                 posX: this.state.posX + event.dx,
                 posY: this.state.posY + event.dy
             });
+
         })
         .on('dragend', (event) => {
             this.props.actions.setStartHour(this.props.timeSlot.id, this.props.date, this.state.posY / this.props.hourSize);
             this.setState({
                 posX: undefined,
-                posY: undefined
+                posY: undefined,
+                dragging: false
             });
         })
         .on('resizestart', (event) => {
@@ -82,7 +87,8 @@ export default class TimeBox extends Component {
             backgroundColor: this.props.color ? this.props.color : 'red',
             WebkitTransform: translateString,
             transform: translateString,
-            height: this.state.height !== undefined ? this.state.height : this.props.timeSlot.duration * this.props.hourSize
+            height: this.state.height !== undefined ? this.state.height : this.props.timeSlot.duration * this.props.hourSize,
+            zIndex: this.state.dragging ? 2000 : undefined
         }
         const duration = this.state.height ? this.state.height / this.props.hourSize : this.props.timeSlot.duration;
         return (
