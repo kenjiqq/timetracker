@@ -50,6 +50,9 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
         border-left: 1px solid grey;
     }
     .day {
+        background: url('../images/dotted_line.png') repeat;
+        background-size: 2px, 28px;
+        background-position-y: -1px;
         border-top: 1px solid grey;
         flex: 1;
         padding: 4px;
@@ -66,6 +69,7 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
     top: 0;
     left: 0;
     right: 0;
+    overflow: hidden;
 }
 
 .projects {
