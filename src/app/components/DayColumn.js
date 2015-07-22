@@ -23,7 +23,7 @@ export default class DayColumn extends Component {
         const zoneRect = dragEl.getBoundingClientRect(),
         dropRect = dropEl.getBoundingClientRect(),
         offset = dropRect.top - zoneRect.top;
-        return parseInt(offset / this.state.hourSize);
+        return Math.round((offset / this.state.hourSize) * 4) / 4;
     }
 
     componentDidMount() {
@@ -46,10 +46,9 @@ export default class DayColumn extends Component {
                     case 'timebox':
                         const timeSlotId = parseInt(event.relatedTarget.getAttribute('data-id'));
                         const droppedTimeSlotDate = event.relatedTarget.getAttribute('data-date');
-                        if(droppedTimeSlotDate !== this.props.date) {
-                            this.props.actions.moveDay(timeSlotId, droppedTimeSlotDate, this.props.date, this.calcStartTime(event.relatedTarget,  event.target));
-                            event.dragEvent.stopImmediatePropagation();
-                        }
+                        droppedTimeSlotDate !== this.props.date ?
+                            this.props.actions.moveDay(timeSlotId, droppedTimeSlotDate, this.props.date, this.calcStartTime(event.relatedTarget,  event.target)) :
+                            this.props.actions.setStartHour(timeSlotId, this.props.date, this.calcStartTime(event.relatedTarget,  event.target));
                         break;
                     case 'project':
                         const project = event.relatedTarget.getAttribute('data-id');

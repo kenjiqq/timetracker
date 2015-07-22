@@ -19,6 +19,7 @@ export default class TimeBox extends Component {
     }
 
     componentDidMount() {
+        this.mounted = true;
         const element = this.refs.box;
         interact(element)
         .draggable({
@@ -53,12 +54,13 @@ export default class TimeBox extends Component {
 
         })
         .on('dragend', (event) => {
-            this.props.actions.setStartHour(this.props.timeSlot.id, this.props.date, this.state.posY / this.props.hourSize);
-            this.setState({
-                posX: undefined,
-                posY: undefined,
-                dragging: false
-            });
+            if(this.mounted) {
+                this.setState({
+                    posX: undefined,
+                    posY: undefined,
+                    dragging: false
+                });
+            }
         })
         .on('resizestart', (event) => {
             this.setState({
@@ -77,6 +79,10 @@ export default class TimeBox extends Component {
             });
         })
 
+    }
+
+    componentWillUnmount() {
+        this.mounted = false;
     }
 
     render() {

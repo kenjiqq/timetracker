@@ -60,6 +60,7 @@ $halfHourSize: 54px;
         height: $halfHourSize * 48;
         &.drop-target {
             padding: 0;
+            margin: -4px;
             border: dashed 4px #29e;
         }
     }
