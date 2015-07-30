@@ -15,7 +15,7 @@ export function moveDay(id, from, to, start) {
              return previous || checkOverlap(start, end, timeSlot.start, timeSlot.start + timeSlot.duration);
          }, false);
 
-        if(conflict) {
+        if(conflict || start < 0) {
             return false;
         }
         dispatch({
@@ -39,7 +39,7 @@ export function setDuration(id, date, duration) {
             }
              return previous || checkOverlap(start, start + duration, timeSlot.start, timeSlot.start + timeSlot.duration);
          }, false);
-        if(conflict) {
+        if(conflict || start < 0) {
             return false;
         }
         dispatch({
@@ -62,7 +62,7 @@ export function setStartHour(id, date, startHour) {
             }
              return previous || checkOverlap(startHour, end, timeSlot.start, timeSlot.start + timeSlot.duration);
          }, false);
-        if(conflict) {
+        if(conflict || startHour < 0) {
             return false;
         }
         dispatch({
@@ -74,19 +74,21 @@ export function setStartHour(id, date, startHour) {
     };
 }
 
-export function addTimeSlot(project, date, start, duration) {
+export function addTimeSlot(project, subProject, activity, date, start, duration) {
     return (dispatch, getState) => {
         const { timeSlots } = getState();
         const toSlots = timeSlots[date];
         const conflict = toSlots && toSlots.reduce(function (previous, timeSlot) {
              return previous || checkOverlap(start, start + duration, timeSlot.start, timeSlot.start + timeSlot.duration);
          }, false);
-        if(conflict) {
+        if(conflict || start < 0) {
             return false;
         }
         dispatch({
             type: ADD_TIME_SLOT,
             project,
+            subProject,
+            activity,
             date,
             start,
             duration

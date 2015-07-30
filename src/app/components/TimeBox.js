@@ -15,7 +15,15 @@ export default class TimeBox extends Component {
     state = {
         posX: undefined,
         posY: undefined,
+        resizeY: undefined,
         dragging: false
+    }
+
+    static formatTime(decimal) {
+        const hrs = Math.floor(decimal)
+        let min = Math.round(decimal  %1 * 60)
+        min = min < 10 ? "0" + min : min.toString();
+        return hrs + ":" + min;
     }
 
     componentDidMount() {
@@ -64,18 +72,24 @@ export default class TimeBox extends Component {
         })
         .on('resizestart', (event) => {
             this.setState({
-                height: this.props.timeSlot.duration * this.props.hourSize
+                height: this.props.timeSlot.duration * this.props.hourSize,
+                resizeY: event.target.getBoundingClientRect().top + (event.pageY - event.target.getBoundingClientRect().bottom)
             });
         })
         .on('resizemove', (event) => {
-            this.setState({
-                height: this.state.height + event.dy
-            });
+            const newHeight = event.pageY - this.state.resizeY;
+            debugger;
+            if(newHeight >= this.props.hourSize / 2) {
+                this.setState({
+                    height: newHeight
+                });
+            }
         })
         .on('resizeend', (event) => {
             this.props.actions.setDuration(this.props.timeSlot.id, this.props.date, this.state.height / this.props.hourSize);
             this.setState({
-                height: undefined
+                height: undefined,
+                resizeY: undefined
             });
         })
 
@@ -97,10 +111,15 @@ export default class TimeBox extends Component {
             zIndex: this.state.dragging ? 2000 : undefined
         }
         const duration = this.state.height ? this.state.height / this.props.hourSize : this.props.timeSlot.duration;
+        const classNames = `timebox ${duration === 0.5 ? 'small' : ''}`;
         return (
-            <li className="timebox" ref="box" style={style} data-id={this.props.timeSlot.id} data-date={this.props.date} data-type="timebox">
-                <h4>{this.props.name}</h4>
-                <div>Duration: {duration}</div>
+            <li className={classNames} ref="box" style={style} data-id={this.props.timeSlot.id} data-date={this.props.date} data-type="timebox">
+                <div className="name">{this.props.name}</div>
+                <div className="sub-project">{this.props.timeSlot.subProject}</div>
+                <div className="bottom-bar">
+                    <span className="duration">{TimeBox.formatTime(duration)}</span>
+                    <span className="activity">{this.props.timeSlot.activity}</span>
+                </div>
             </li>
         );
     }

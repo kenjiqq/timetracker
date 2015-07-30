@@ -1,6 +1,7 @@
 'use strict';
 
 import React, { PropTypes, Component } from 'react';
+import ReactDOM from 'react-dom';
 import TimeBox from './TimeBox';
 import interact from 'interact.js';
 import classnames from 'classnames';
@@ -26,11 +27,18 @@ export default class DayColumn extends Component {
         return Math.round((offset / this.state.hourSize) * 4) / 4;
     }
 
+    calcStartPosition(dropEl, clickPos) {
+        const dropRect = dropEl.getBoundingClientRect(),
+        offset = clickPos - dropRect.top,
+        quarterSize = this.state.hourSize / 4;
+        return (quarterSize * Math.floor(offset / quarterSize)) + dropRect.top;
+    }
+
     componentDidMount() {
         const element = this.refs.day;
         interact(element)
         .dropzone({
-            accept: ['.timebox', '.project'],
+            accept: ['.timebox', '.sub-project-type'],
             ondragenter: (event) => {
                 this.setState({
                     dropTarget: true
@@ -50,9 +58,11 @@ export default class DayColumn extends Component {
                             this.props.actions.moveDay(timeSlotId, droppedTimeSlotDate, this.props.date, this.calcStartTime(event.relatedTarget,  event.target)) :
                             this.props.actions.setStartHour(timeSlotId, this.props.date, this.calcStartTime(event.relatedTarget,  event.target));
                         break;
-                    case 'project':
-                        const project = event.relatedTarget.getAttribute('data-id');
-                        this.props.actions.addTimeSlot(project, this.props.date, this.calcStartTime(event.relatedTarget, event.target), 1);
+                    case 'new-timeslot':
+                        const project = event.relatedTarget.getAttribute('data-project');
+                        const subProject = event.relatedTarget.getAttribute('data-subproject');
+                        const activity = event.relatedTarget.getAttribute('data-activity');
+                        this.props.actions.addTimeSlot(project, subProject, activity, this.props.date, this.calcStartTime(event.relatedTarget, event.target), 1);
                         break;
                 }
                 this.setState({

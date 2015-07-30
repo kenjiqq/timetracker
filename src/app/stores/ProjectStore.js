@@ -5,7 +5,13 @@ import {ADD_PROJECT} from '../constants/ActionTypes';
 const initialState = [{
     code: 'P0000NOE',
     color: 'green',
-    name: 'SmartBank'
+    name: 'SmartBank',
+    subProjects: [
+        {
+            name: 'Framework',
+            color: undefined
+        }
+    ]
 }];
 
 export default function projects(state = initialState, action) {
@@ -16,7 +22,8 @@ export default function projects(state = initialState, action) {
             {
                 code,
                 color,
-                name
+                name,
+                subProjects: []
             },
             ...state
         ];

@@ -24,7 +24,6 @@ var config = {
             inject: 'body'
         }),
         new Webpack.HotModuleReplacementPlugin(),
-        new Webpack.NoErrorsPlugin()
     ],
     module: {
         loaders: [{

@@ -2,10 +2,12 @@
 import {ADD_TIME_SLOT, MOVE_TIME_SLOT, SET_DURATION_TIME_SLOT, SET_START_HOUR_TIME_SLOT} from '../constants/ActionTypes';
 import moment from 'moment';
 
-function createTimeSlot({project, start, duration}) {
+function createTimeSlot({project, subProject, activity, start, duration}) {
     return {
         id: Date.now(),
         project,
+        subProject,
+        activity,
         start,
         duration
     };
@@ -15,6 +17,8 @@ const initialState = {
     [moment().format('DD-MM-YYYY')]: [{
         id: Date.now(),
         project: 'P0000NOE',
+        subProject: 'Framework',
+        activity: "QA",
         start: 1,
         duration: 1.5
     }]

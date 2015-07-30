@@ -1,49 +1,46 @@
-import React from 'react';
-import interact from 'interact.js';
+import React, {PropTypes} from 'react';
+import SubProjectItem from './SubProjectItem';
 
 export default class ProjectItem extends React.Component {
-    state = {
-        posX: 0,
-        posY: 0,
-        dragging: false
+    static propTypes = {
+        project: PropTypes.object.isRequired
     }
-    componentDidMount() {
-        const element = this.refs.item;
-        interact(element)
-        .draggable({})
-        .on('dragstart', (event) => {
-            this.setState({
-                dragging: true
-            })
-        })
-        .on('dragmove', (event) => {
-            this.setState({
-                posX: this.state.posX + event.dx,
-                posY: this.state.posY + event.dy
-            });
-        })
-        .on('dragend', (event) => {
-            this.setState({
-                posX: 0,
-                posY: 0,
-                dragging: false
-            });
+
+    state = {
+        expanded: false
+    }
+
+    toggleProject  = () => {
+        this.setState({
+            expanded: !this.state.expanded
         });
     }
+
+    renderExpanded() {
+        return this.props.project.subProjects.map(subProject => {
+            return (
+                <li key={subProject.name} className="list-group-item reset-padding">
+                    <SubProjectItem subProject={subProject} defaultColor={this.props.project.color} project={this.props.project.code}></SubProjectItem>
+                </li>
+            )
+        });
+    }
+
     render() {
-        const {posX, posY} = this.state;
-        const {project} = this.props;
-        const translateString = `translate(${posX}px, ${posY}px)`;
-        const style = {
-            backgroundColor: project.color,
-            WebkitTransform: translateString,
-            transform: translateString,
-            zIndex:  this.state.dragging ? 2000 : undefined
-        };
+        const projctStyle = {
+            backgroundColor: this.props.project.color
+        }
         return (
-            <li key={project.code} ref="item" className="project" style={style} data-id={project.code} data-type="project">
-                <span>{project.name}</span>
-            </li>
+            <div className="project panel panel-default">
+                <div style={projctStyle} className="panel-heading" onClick={this.toggleProject}>
+                    <h5 className="panel-title">{this.props.project.name}</h5>
+                </div>
+                <div className={`panel-collapse collapse ${ this.state.expanded ? 'in' : ''}`}>
+                    <ul className="sub-projects list-group">
+                        {this.renderExpanded()}
+                    </ul>
+                </div>
+            </div>
         );
     }
 }

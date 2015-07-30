@@ -73,6 +73,31 @@ $halfHourSize: 54px;
     right: 0;
     overflow: hidden;
 
+    display: flex;
+    flex-direction: column;
+    padding: 0.5em;
+
+    > div {
+        flex-shrink: 1;
+        min-height: 0;
+    }
+
+    .name {
+        font-weight: bold;
+    }
+
+    .sub-project {
+        flex-grow: 1;
+        font-size: 0.9em;
+    }
+
+    .bottom-bar {
+        flex-shrink: 0;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+    }
+
 }
 
 .projects {
@@ -88,10 +113,38 @@ $halfHourSize: 54px;
         }
 
     }
-    .project-list {
-        .project {
-            position: relative;
-            padding: 10px;
+
+    .sub-project {
+        padding: 10px 0;
+        display: flex;
+        z-index: 2000;
+        position: relative;
+        .sub-project-name {
+            margin: {
+                left: 15px;
+                right: 15px;
+            }
+        }
+        .activity-types {
+            display: none;
+            position: absolute;
+            top: 0;
+            background-color: grey;
+            > li {
+                padding: 10px 15px;
+            }
+        }
+        &:hover {
+            background-color: grey;
+            .activity-types {
+                display: block;
+            }
         }
     }
 }
+
+.list-group-item {
+    &, .reset-padding {
+        padding: 0;
+    }
+ }
