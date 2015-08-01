@@ -3,7 +3,7 @@ import ProjectList from './ProjectList';
 import { connect } from 'redux/react';
 
 @connect(state => ({
-  projects: state.projects
+  projects: state.projects.toJS()
 }))
 export default class ProjectSection extends React.Component {
     render() {

@@ -78,7 +78,6 @@ export default class TimeBox extends Component {
         })
         .on('resizemove', (event) => {
             const newHeight = event.pageY - this.state.resizeY;
-            debugger;
             if(newHeight >= this.props.hourSize / 2) {
                 this.setState({
                     height: newHeight

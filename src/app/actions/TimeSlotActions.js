@@ -8,7 +8,7 @@ function checkOverlap(start1, end1, start2, end2) {
 
 export function moveDay(id, from, to, start) {
     return (dispatch, getState) => {
-        const { timeSlots } = getState();
+        const timeSlots = getState()['timeSlots'].toJS();
         const end = start + timeSlots[from].find(timeSlot => timeSlot.id === id).duration;
         const toSlots = timeSlots[to];
         const conflict = toSlots && toSlots.reduce(function (previous, timeSlot) {
@@ -30,7 +30,7 @@ export function moveDay(id, from, to, start) {
 
 export function setDuration(id, date, duration) {
     return (dispatch, getState) => {
-        const { timeSlots } = getState();
+        const timeSlots = getState()['timeSlots'].toJS();
         const start = timeSlots[date].find(timeSlot => timeSlot.id === id).start;
         const toSlots = timeSlots[date];
         const conflict = toSlots && toSlots.reduce(function (previous, timeSlot) {
@@ -53,7 +53,7 @@ export function setDuration(id, date, duration) {
 
 export function setStartHour(id, date, startHour) {
     return (dispatch, getState) => {
-        const { timeSlots } = getState();
+        const timeSlots = getState()['timeSlots'].toJS();
         const end = startHour + timeSlots[date].find(timeSlot => timeSlot.id === id).duration;
         const toSlots = timeSlots[date];
         const conflict = toSlots && toSlots.reduce(function (previous, timeSlot) {
@@ -76,7 +76,7 @@ export function setStartHour(id, date, startHour) {
 
 export function addTimeSlot(project, subProject, activity, date, start, duration) {
     return (dispatch, getState) => {
-        const { timeSlots } = getState();
+        const timeSlots = getState()['timeSlots'].toJS();
         const toSlots = timeSlots[date];
         const conflict = toSlots && toSlots.reduce(function (previous, timeSlot) {
              return previous || checkOverlap(start, start + duration, timeSlot.start, timeSlot.start + timeSlot.duration);
