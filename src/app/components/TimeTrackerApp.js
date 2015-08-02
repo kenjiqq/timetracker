@@ -1,8 +1,7 @@
 'use strict';
 
 import React from 'react';
-import CalendarSection from './CalendarSection';
-import ProjectSection from './ProjectSection';
+import {Link} from 'react-router';
 import { Provider } from 'redux/react';
 import { createRedux } from 'redux';
 import * as stores from '../stores';
@@ -14,9 +13,14 @@ export default class TimeTrackerApp extends React.Component {
         return (
             <Provider redux={redux}>
                 {() =>
-                    <div className="app">
-                        <ProjectSection />
-                        <CalendarSection />
+                    <div>
+                        <header>
+                            <ul className="nav nav-tabs">
+                                <li role="presentation"><Link to="/">Calendar</Link></li>
+                                <li role="presentation"><Link to="projects">Projects</Link></li>
+                            </ul>
+                        </header>
+                        {this.props.children}
                     </div>
                 }
              </Provider>

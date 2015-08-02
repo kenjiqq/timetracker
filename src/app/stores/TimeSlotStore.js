@@ -29,7 +29,7 @@ export default function timeSlots(state = initialState, action) {
     switch (action.type) {
         case ADD_TIME_SLOT:
             const newSlot = createTimeSlot(action);
-                return state.update(action.date, [], date => date.push(newSlot));
+            return state.update(action.date, List(), date => date.push(newSlot));
         case MOVE_TIME_SLOT:
             return state.withMutations(state => {
                 state.update(action.to, List(), date => date.push(state.get(action.from).find(timeSlot => timeSlot.get('id') === action.id).set('start', action.start)))
