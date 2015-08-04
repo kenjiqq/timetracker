@@ -1,5 +1,5 @@
 import React from 'react';
-import ProjectList from './ProjectList';
+import ProjectList from '../components/ProjectList';
 import { connect } from 'redux/react';
 
 @connect(state => ({

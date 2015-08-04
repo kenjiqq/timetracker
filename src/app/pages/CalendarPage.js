@@ -1,7 +1,7 @@
 'use strict';
 import React from 'react';
-import CalendarSection from './CalendarSection';
-import ProjectSection from './ProjectSection';
+import CalendarSection from '../sections/CalendarSection';
+import ProjectSection from '../sections/ProjectSection';
 
 export default class CalendarPage extends React.Component {
     render() {
