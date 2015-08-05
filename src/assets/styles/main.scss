@@ -75,11 +75,15 @@ $halfHourSize: 54px;
     }
 }
 
-.timebox {
+.timebox-container {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
+}
+
+.timebox {
+
     overflow: hidden;
 
     display: flex;
@@ -173,3 +177,10 @@ $halfHourSize: 54px;
        }
      }
  }
+
+.newtimeslot-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100px;
+}

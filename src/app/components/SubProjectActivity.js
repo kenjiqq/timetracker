@@ -1,7 +1,9 @@
 import React, {PropTypes} from 'react';
 import interact from 'interact.js';
+import NewTimeSlotDragger from './NewTimeSlotDragger';
 
-export default class SubProjectType extends React.Component {
+
+export default class SubProjectActivity extends React.Component {
 
     static propTypes = {
         name: PropTypes.string.isRequired,
@@ -10,43 +12,24 @@ export default class SubProjectType extends React.Component {
         color: PropTypes.string.isRequired
     }
 
-    state = {
-        posX: 0,
-        posY: 0,
-        dragging: false
-    }
-
     componentDidMount() {
         const element = this.refs.item;
         interact(element)
         .draggable({})
         .on('dragstart', event => {
-            this.setState({
-                dragging: true
-            });
+            NewTimeSlotDragger.show(this.props.project, this.props.subProject, this.props.name, event.pageX, event.pageY);
         })
         .on('dragmove', event => {
-            this.setState({
-                posX: this.state.posX + event.dx,
-                posY: this.state.posY + event.dy
-            });
+            NewTimeSlotDragger.move(event.dx, event.dy);
         })
         .on('dragend', event => {
-            this.setState({
-                posX: 0,
-                posY: 0,
-                dragging: false
-            });
+            NewTimeSlotDragger.hide();
         })
     }
 
     render() {
-        const {posX, posY} = this.state;
-        const translateString = `translate(${posX}px, ${posY}px)`;
         const style = {
             backgroundColor: this.props.color,
-            WebkitTransform: translateString,
-            transform: translateString,
         }
         const dataAttrs = {
             'data-project': this.props.project,

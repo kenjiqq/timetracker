@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import SubProjectType from './SubProjectType'
+import SubProjectActivity from './SubProjectActivity'
 
 export default class SubProjectItem extends React.Component {
     static propTypes = {
@@ -16,7 +16,7 @@ export default class SubProjectItem extends React.Component {
     renderTypes(subProject, restProps) {
         return SubProjectItem.types.map((type, i) => {
             return (
-                <SubProjectType key={i} name={type} subProject={subProject} {...restProps} ></SubProjectType>
+                <SubProjectActivity key={i} name={type} subProject={subProject} {...restProps} ></SubProjectActivity>
             )
         })
     }

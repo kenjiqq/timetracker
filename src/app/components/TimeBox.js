@@ -3,20 +3,14 @@
 import React, { PropTypes, Component } from 'react';
 import interact from 'interact.js';
 
-export default class TimeBox extends Component {
+export class TimeBox extends Component {
     static propTypes = {
         hourSize: PropTypes.number.isRequired,
-        timeSlot: PropTypes.object.isRequired,
         color: PropTypes.string,
-        date: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        actions: PropTypes.object.isRequired
-    }
-    state = {
-        posX: undefined,
-        posY: undefined,
-        resizeY: undefined,
-        dragging: false
+        project: PropTypes.string.isRequired,
+        duration: PropTypes.number.isRequired,
+        subProject: PropTypes.string.isRequired,
+        activity: PropTypes.string.isRequired,
     }
 
     static formatTime(decimal) {
@@ -24,6 +18,41 @@ export default class TimeBox extends Component {
         let min = Math.round(decimal  %1 * 60)
         min = min < 10 ? "0" + min : min.toString();
         return hrs + ":" + min;
+    }
+
+    render() {
+        const style = {
+            backgroundColor: this.props.color ? this.props.color : 'red',
+            height: this.props.duration * this.props.hourSize,
+        }
+        const classNames = `timebox ${this.props.duration === 0.5 ? 'small' : ''}`;
+        return (
+            <div className={classNames} style={style}>
+                <div className="name">{this.props.project}</div>
+                <div className="sub-project">{this.props.subProject}</div>
+                <div className="bottom-bar">
+                    <span className="duration">{TimeBox.formatTime(this.props.duration)}</span>
+                    <span className="activity">{this.props.activity}</span>
+                </div>
+            </div>
+        );
+    }
+}
+
+export class TimeBoxExisting extends Component {
+    static propTypes = {
+        ...TimeBox.propTypes,
+        date: PropTypes.string.isRequired,
+        id: PropTypes.number,
+        actions: PropTypes.object.isRequired,
+        start: PropTypes.number.isRequired
+    }
+
+    state = {
+        posX: undefined,
+        posY: undefined,
+        resizeY: undefined,
+        dragging: false
     }
 
     componentDidMount() {
@@ -50,16 +79,15 @@ export default class TimeBox extends Component {
         .on('dragstart', (event) => {
             this.setState({
                 posX: 0,
-                posY: this.props.timeSlot.start * this.props.hourSize,
+                posY: this.props.start * this.props.hourSize,
                 dragging: true
             });
         })
-        .on('dragmove', (event) => {
+        .on('dragmove', event => {
             this.setState({
                 posX: this.state.posX + event.dx,
                 posY: this.state.posY + event.dy
             });
-
         })
         .on('dragend', (event) => {
             if(this.mounted) {
@@ -72,7 +100,7 @@ export default class TimeBox extends Component {
         })
         .on('resizestart', (event) => {
             this.setState({
-                height: this.props.timeSlot.duration * this.props.hourSize,
+                duration: this.props.duration,
                 resizeY: event.target.getBoundingClientRect().top + (event.pageY - event.target.getBoundingClientRect().bottom)
             });
         })
@@ -80,14 +108,14 @@ export default class TimeBox extends Component {
             const newHeight = event.pageY - this.state.resizeY;
             if(newHeight >= this.props.hourSize / 2) {
                 this.setState({
-                    height: newHeight
+                    duration: newHeight / this.props.hourSize
                 });
             }
         })
         .on('resizeend', (event) => {
-            this.props.actions.setDuration(this.props.timeSlot.id, this.props.date, this.state.height / this.props.hourSize);
+            this.props.actions.setDuration(this.props.id, this.props.date, this.state.duration);
             this.setState({
-                height: undefined,
+                duration: undefined,
                 resizeY: undefined
             });
         })
@@ -99,27 +127,27 @@ export default class TimeBox extends Component {
     }
 
     render() {
+        const {duration, start, date, id, actions, ...rest} = this.props;
         const x = this.state.posX !== undefined ? this.state.posX : 0,
-            y = this.state.posY !== undefined ? this.state.posY : this.props.timeSlot.start * this.props.hourSize,
-            translateString = `translate(${x}px, ${y}px)`;
+        y = this.state.posY !== undefined ? this.state.posY : start * this.props.hourSize,
+        translateString = `translate(${x}px, ${y}px)`;
+
         const style = {
-            backgroundColor: this.props.color ? this.props.color : 'red',
             WebkitTransform: translateString,
             transform: translateString,
-            height: this.state.height !== undefined ? this.state.height : this.props.timeSlot.duration * this.props.hourSize,
             zIndex: this.state.dragging ? 2000 : undefined
         }
-        const duration = this.state.height ? this.state.height / this.props.hourSize : this.props.timeSlot.duration;
-        const classNames = `timebox ${duration === 0.5 ? 'small' : ''}`;
+
+        const dataAttrs = {
+            'data-id': id,
+            'data-date': date,
+            'data-type': 'timebox'
+        }
+
         return (
-            <li className={classNames} ref="box" style={style} data-id={this.props.timeSlot.id} data-date={this.props.date} data-type="timebox">
-                <div className="name">{this.props.name}</div>
-                <div className="sub-project">{this.props.timeSlot.subProject}</div>
-                <div className="bottom-bar">
-                    <span className="duration">{TimeBox.formatTime(duration)}</span>
-                    <span className="activity">{this.props.timeSlot.activity}</span>
-                </div>
+            <li ref="box" className="timebox-container" style={style} {...dataAttrs}>
+                <TimeBox {...rest} duration={this.state.duration || duration}></TimeBox>
             </li>
-        );
+        )
     }
 };
