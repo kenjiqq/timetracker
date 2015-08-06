@@ -20,7 +20,7 @@ export default class ProjectItem extends React.Component {
         return this.props.project.subProjects.map(subProject => {
             return (
                 <li key={subProject.id} className="list-group-item reset-padding">
-                    <SubProjectItem subProject={subProject} defaultColor={this.props.project.color} project={this.props.project.id}></SubProjectItem>
+                    <SubProjectItem subProject={subProject} defaultColor={this.props.project.color} project={this.props.project}></SubProjectItem>
                 </li>
             )
         });

@@ -12,14 +12,14 @@ class Manager extends EventEmitter {
     pos = {}
     isShown = false
 
-    show(project, subProject, activity, startX, startY) {
+    show(project, subProject, activity, color, startX, startY) {
         this.isShown = true;
         this.pos = {
             x: startX,
             y: startY,
         }
         this.props = {
-            project, subProject, activity
+            project, subProject, activity, color
         }
         this.emit(SHOW_EVENT);
     }
@@ -58,8 +58,8 @@ export default class NewTimeSlotDragger extends React.Component {
         pos: {}
     }
 
-    static show(project, subProject, activity, startX, startY) {
-        manager.show(project, subProject, activity, startX, startY);
+    static show(project, subProject, activity, color, startX, startY) {
+        manager.show(project, subProject, activity, color, startX, startY);
     }
 
     static hide() {

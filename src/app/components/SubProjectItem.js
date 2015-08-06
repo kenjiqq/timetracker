@@ -3,8 +3,9 @@ import SubProjectActivity from './SubProjectActivity'
 
 export default class SubProjectItem extends React.Component {
     static propTypes = {
+        project: PropTypes.object.isRequired,
         subProject: PropTypes.object.isRequired,
-        defaultColor: PropTypes.string.isRequired
+        defaultColor: PropTypes.string.isRequired,
     }
 
     static types = [
@@ -16,7 +17,7 @@ export default class SubProjectItem extends React.Component {
     renderTypes(subProject, restProps) {
         return SubProjectItem.types.map((type, i) => {
             return (
-                <SubProjectActivity key={i} name={type} subProject={subProject.id} {...restProps} ></SubProjectActivity>
+                <SubProjectActivity key={i} name={type} subProject={subProject} {...restProps} project={this.props.project} ></SubProjectActivity>
             )
         })
     }
