@@ -5,7 +5,7 @@ import Immutable, {Map, List} from 'immutable';
 
 function createTimeSlot({project, subProject, activity, start, duration}) {
     return Map({
-        id: Date.now(),
+        id: Date.now().toString(),
         project,
         subProject,
         activity,
@@ -14,16 +14,7 @@ function createTimeSlot({project, subProject, activity, start, duration}) {
     });
 }
 
-const initialState = Immutable.fromJS({
-    [moment().format('DD-MM-YYYY')]: [{
-        id: Date.now(),
-        project: 'P0000NOE',
-        subProject: 'Framework',
-        activity: 'QA',
-        start: 1,
-        duration: 1.5
-    }]
-});
+const initialState = Map();
 
 export default function timeSlots(state = initialState, action) {
     switch (action.type) {

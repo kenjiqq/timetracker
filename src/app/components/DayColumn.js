@@ -52,7 +52,7 @@ export default class DayColumn extends Component {
             ondrop: (event) => {
                 switch (event.relatedTarget.getAttribute('data-type')) {
                     case 'timebox':
-                        const timeSlotId = parseInt(event.relatedTarget.getAttribute('data-id'));
+                        const timeSlotId = event.relatedTarget.getAttribute('data-id');
                         const droppedTimeSlotDate = event.relatedTarget.getAttribute('data-date');
                         droppedTimeSlotDate !== this.props.date ?
                             this.props.actions.moveDay(timeSlotId, droppedTimeSlotDate, this.props.date, this.calcStartTime(event.relatedTarget,  event.target)) :
@@ -76,9 +76,22 @@ export default class DayColumn extends Component {
 
     render() {
         const timeNodes = this.props.timeSlots.map((timeSlot) => {
-            const {name, ...restProject} = this.props.projects.find(project => timeSlot.project === project.code);
+            const project = this.props.projects.find(project => timeSlot.project === project.id);
+            const subProject = project.subProjects.find(subProject => subProject.id === timeSlot.subProject);
+            const props = {
+                date: this.props.date,
+                project: project.name,
+                subProject: subProject.name,
+                color: subProject.color || project.color,
+                hourSize: this.props.hourSize,
+                actions: this.props.actions,
+                activity: timeSlot.activity,
+                duration: timeSlot.duration,
+                start: timeSlot.start,
+                id: timeSlot.id
+            }
             return (
-                <TimeBoxExisting key={timeSlot.id} date={this.props.date} {...timeSlot} {...restProject} project={name} hourSize={this.props.hourSize} actions={this.props.actions} />
+                <TimeBoxExisting key={timeSlot.id} {...props} />
             );
         });
 

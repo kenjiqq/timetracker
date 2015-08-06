@@ -16,7 +16,7 @@ export default class SubProjectItem extends React.Component {
     renderTypes(subProject, restProps) {
         return SubProjectItem.types.map((type, i) => {
             return (
-                <SubProjectActivity key={i} name={type} subProject={subProject} {...restProps} ></SubProjectActivity>
+                <SubProjectActivity key={i} name={type} subProject={subProject.id} {...restProps} ></SubProjectActivity>
             )
         })
     }
@@ -27,7 +27,7 @@ export default class SubProjectItem extends React.Component {
             <div className="sub-project">
                 <h5 className="sub-project-name">{this.props.subProject.name}</h5>
                 <ul className="activity-types list-unstyled">
-                    {this.renderTypes(subProject.name, rest)}
+                    {this.renderTypes(subProject, rest)}
                 </ul>
             </div>
         );

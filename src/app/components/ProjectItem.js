@@ -19,8 +19,8 @@ export default class ProjectItem extends React.Component {
     renderExpanded() {
         return this.props.project.subProjects.map(subProject => {
             return (
-                <li key={subProject.name} className="list-group-item reset-padding">
-                    <SubProjectItem subProject={subProject} defaultColor={this.props.project.color} project={this.props.project.code}></SubProjectItem>
+                <li key={subProject.id} className="list-group-item reset-padding">
+                    <SubProjectItem subProject={subProject} defaultColor={this.props.project.color} project={this.props.project.id}></SubProjectItem>
                 </li>
             )
         });

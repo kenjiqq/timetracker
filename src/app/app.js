@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import {Router, Route, Link} from 'react-router';
 import { history } from 'react-router/lib/HashHistory';
 import CalendarPage from './pages/CalendarPage';
+import ProjectEditPage from './pages/ProjectEditPage';
 import { Provider } from 'redux/react';
 import { createRedux } from 'redux';
 import * as stores from './stores';
@@ -22,7 +23,7 @@ class TimeTrackerApp extends React.Component {
                         <header>
                             <ul className="nav nav-tabs">
                                 <li role="presentation"><Link to="/">Calendar</Link></li>
-                                <li role="presentation"><Link to="projects">Projects</Link></li>
+                                <li role="presentation"><Link to="/projects">Projects</Link></li>
                             </ul>
                         </header>
                         {this.props.children}
@@ -38,6 +39,7 @@ var routes = (
     <Router history={history}>
         <Route component={TimeTrackerApp}>
             <Route path="/" component={CalendarPage}/>
+            <Route path="/projects" components={ProjectEditPage} />
         </Route>
     </Router>
 );

@@ -43,7 +43,7 @@ export class TimeBoxExisting extends Component {
     static propTypes = {
         ...TimeBox.propTypes,
         date: PropTypes.string.isRequired,
-        id: PropTypes.number,
+        id: PropTypes.string,
         actions: PropTypes.object.isRequired,
         start: PropTypes.number.isRequired
     }
