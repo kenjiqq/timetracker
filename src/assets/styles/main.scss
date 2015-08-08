@@ -7,6 +7,14 @@ $halfHourSize: 54px;
     display: flex;
 }
 
+header {
+    display: flex;
+
+    .nav {
+        flex: 1;
+    }
+}
+
 .calendar-section {
     flex: 1;
     display: flex;
@@ -189,4 +197,17 @@ $halfHourSize: 54px;
     width: 500px;
     margin: 0 auto;
 
+}
+
+.login-form {
+    width: 500px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+html, body, #app, .app {
+    height: 100%;
 }

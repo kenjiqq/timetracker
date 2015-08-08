@@ -26,7 +26,7 @@ export default class SubProjectForm extends React.Component {
         event.preventDefault();
         const {projectId, projectCode, projectName, projectColor} = this.state;
         if(projectId) {
-            this.props.actions.editSubProject(this.props.project.id, projectId, projectName, projectColor);
+            this.props.actions.editSubProject(projectId, this.props.project.id, projectName, projectColor);
         } else {
             this.props.actions.addSubProject(this.props.project.id, projectName, projectColor);
         }

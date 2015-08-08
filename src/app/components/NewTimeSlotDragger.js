@@ -74,44 +74,54 @@ export default class NewTimeSlotDragger extends React.Component {
         return manager.getPos();
     }
 
+    posDiffX = 0;
+    posDiffY = 0;
+
+    showListener = () => {
+        const el = ReactDOM.findDOMNode(this.refs.dragger);
+        const elRect = el.getBoundingClientRect();
+        this.posDiffX = elRect.left + (elRect.right - elRect.left) / 2;
+        this.posDiffY = elRect.top;
+        const pos = {
+            x:  manager.getPos().x - this.posDiffX,
+            y:  manager.getPos().y - this.posDiffY
+        }
+
+        this.setState({
+            isShown: true,
+            props: manager.getProps(),
+            pos
+        })
+    }
+
+    moveListener = () => {
+        const dragPos = manager.getPos();
+        const pos = {
+            x: dragPos.x - this.posDiffX,
+            y: dragPos.y - this.posDiffY
+        }
+        this.setState({
+            pos
+        })
+    }
+
+    hideListener = () => {
+        this.setState({
+            isShown: false,
+            pos: {}
+        })
+    }
+
     componentDidMount() {
-        let posDiffX = 0;
-        let posDiffY = 0;
+        manager.on(SHOW_EVENT, this.showListener);
+        manager.on(HIDE_EVENT, this.hideListener);
+        manager.on(MOVE_EVENT, this.moveListener);
+    }
 
-        manager.on(SHOW_EVENT, () => {
-            const el = ReactDOM.findDOMNode(this.refs.dragger);
-            const elRect = el.getBoundingClientRect();
-            posDiffX = elRect.left + (elRect.right - elRect.left) / 2;
-            posDiffY = elRect.top;
-            const pos = {
-                x:  manager.getPos().x - posDiffX,
-                y:  manager.getPos().y - posDiffY
-            }
-
-            this.setState({
-                isShown: true,
-                props: manager.getProps(),
-                pos
-            })
-        });
-
-        manager.on(HIDE_EVENT, () => {
-            this.setState({
-                isShown: false,
-                pos: {}
-            })
-        });
-
-        manager.on(MOVE_EVENT, () => {
-            const dragPos = manager.getPos();
-            const pos = {
-                x: dragPos.x - posDiffX,
-                y: dragPos.y - posDiffY
-            }
-            this.setState({
-                pos
-            })
-        });
+    componentWillUnmount() {
+        manager.removeListener(SHOW_EVENT, this.showListener);
+        manager.removeListener(HIDE_EVENT, this.hideListener);
+        manager.removeListener(MOVE_EVENT, this.moveListener);
     }
 
     renderIfShown() {

@@ -3,26 +3,17 @@
 import {ADD_PROJECT, EDIT_PROJECT, ADD_SUB_PROJECT, EDIT_SUB_PROJECT} from '../constants/ActionTypes';
 import Immutable, {Map, List} from 'immutable';
 
-const initialState = Immutable.fromJS([{
-    id: Date.now().toString(),
-    code: 'P0000NOE',
-    color: 'green',
-    name: 'SmartBank',
-    subProjects: [
-        {
-            id: Date.now().toString(),
-            name: 'Framework',
-            color: undefined
-        }
-    ]
-}]);
+const initialState = List();
 
 export default function projects(state = initialState, action) {
+    if(!action) {
+        return state;
+    }
     const {id, projectId, code, color, name} = action;
     switch (action.type) {
     case ADD_PROJECT:
         return state.push(Map({
-            id: Date.now().toString(),
+            id,
             code,
             color,
             name,
@@ -37,7 +28,7 @@ export default function projects(state = initialState, action) {
     case ADD_SUB_PROJECT:
         return state.updateIn([state.findIndex(project => project.get('id') === projectId), 'subProjects'], List(),
             subProjects => subProjects.push(Map({
-                id: Date.now().toString(),
+                id,
                 name,
                 color
             })));

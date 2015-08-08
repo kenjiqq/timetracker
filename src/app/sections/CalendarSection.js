@@ -23,7 +23,8 @@ export default class CalendarSection extends React.Component {
 
     changeWeek = (dx) => {
         const newWeek = moment().week(this.state.weekNumber).add(dx, 'week').week();
-            this.setState({
+        TimeSlotActions.loadTimeSlots(moment().week(newWeek).startOf('week'), moment().week(newWeek).endOf('week'));
+        this.setState({
             weekNumber: newWeek
         });
     }
@@ -42,6 +43,9 @@ export default class CalendarSection extends React.Component {
 
     handleNewTimeSlot = (project, date, start, duration) => {
         this.props.dispatch(TimeSlotActions.addTimeSlot(project, date, start, duration));
+    }
+    componentDidMount () {
+        TimeSlotActions.loadTimeSlots(moment().week(this.state.weekNumber).startOf('week'), moment().week(this.state.weekNumber).endOf('week'))
     }
 
     renderDays() {

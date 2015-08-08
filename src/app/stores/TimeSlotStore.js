@@ -1,11 +1,11 @@
 'use strict';
-import {ADD_TIME_SLOT, MOVE_TIME_SLOT, SET_DURATION_TIME_SLOT, SET_START_HOUR_TIME_SLOT} from '../constants/ActionTypes';
+import {ADD_TIME_SLOT, EDIT_TIME_SLOT, CLEAR_TIME_SLOTS} from '../constants/ActionTypes';
 import moment from 'moment';
 import Immutable, {Map, List} from 'immutable';
 
-function createTimeSlot({project, subProject, activity, start, duration}) {
+function createTimeSlot({id, project, subProject, activity, start, duration}) {
     return Map({
-        id: Date.now().toString(),
+        id,
         project,
         subProject,
         activity,
@@ -17,19 +17,31 @@ function createTimeSlot({project, subProject, activity, start, duration}) {
 const initialState = Map();
 
 export default function timeSlots(state = initialState, action) {
+    if(!action) {
+        return state;
+    }
     switch (action.type) {
         case ADD_TIME_SLOT:
             const newSlot = createTimeSlot(action);
             return state.update(action.date, List(), date => date.push(newSlot));
-        case MOVE_TIME_SLOT:
-            return state.withMutations(state => {
-                state.update(action.to, List(), date => date.push(state.get(action.from).find(timeSlot => timeSlot.get('id') === action.id).set('start', action.start)))
-                .update(action.from, date => date.filter(timeSlot => timeSlot.get('id') !== action.id));
+        case EDIT_TIME_SLOT:
+            let slotIndex;
+            let date;
+            state.forEach((list, _date) => {
+                slotIndex = list.findIndex(timeSlot => timeSlot.get('id') === action.id);
+                if(slotIndex !== -1) {
+                    date = _date;
+                    return false;
+                }
             });
-        case SET_DURATION_TIME_SLOT:
-            return state.setIn([action.date, state.get(action.date).findIndex(timeSlot => timeSlot.get('id') === action.id), 'duration'], action.duration);
-        case SET_START_HOUR_TIME_SLOT:
-            return state.setIn([action.date, state.get(action.date).findIndex(timeSlot => timeSlot.get('id') === action.id), 'start'], action.startHour);
+            if(date !== action.date) {
+                return state.withMutations(map => {
+                    map.deleteIn([date, slotIndex]).update(action.date, List(), dateList => dateList.push(createTimeSlot(action)));
+                });
+            }
+            return state.setIn([action.date, state.get(action.date).findIndex(timeSlot => timeSlot.get('id') === action.id)], createTimeSlot(action));
+        case CLEAR_TIME_SLOTS:
+            return Map();
         default:
             return state;
     }
