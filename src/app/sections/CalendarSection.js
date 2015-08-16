@@ -3,6 +3,7 @@ import { connect } from 'redux/react';
 import DayColumn from '../components/DayColumn';
 import moment from 'moment';
 import * as TimeSlotActions from '../actions/TimeSlotActions';
+import { changeWeek } from '../actions/CalendarActions';
 import { bindActionCreators } from 'redux';
 import NewTimeSlotDragger from '../components/NewTimeSlotDragger';
 
@@ -11,22 +12,16 @@ const hours = ['00.00', '00.30', '01.00', '01.30', '02.00', '02.30', '03.00', '0
 
 @connect(state => ({
     timeSlots: state.timeSlots.toJS(),
-    projects: state.projects.toJS()
+    projects: state.projects.toJS(),
+    calendar: state.calendar.toJS()
 }))
 
 export default class CalendarSection extends React.Component {
     hourSize = 108
 
-    state = {
-        weekNumber: moment().week()
-    }
-
     changeWeek = (dx) => {
-        const newWeek = moment().week(this.state.weekNumber).add(dx, 'week').week();
-        TimeSlotActions.loadTimeSlots(moment().week(newWeek).startOf('week'), moment().week(newWeek).endOf('week'));
-        this.setState({
-            weekNumber: newWeek
-        });
+        const newWeek = moment().week(this.props.calendar.week).add(dx, 'week').week();
+        changeWeek(newWeek);
     }
 
     pagerPrevious = () => {
@@ -44,14 +39,11 @@ export default class CalendarSection extends React.Component {
     handleNewTimeSlot = (project, date, start, duration) => {
         this.props.dispatch(TimeSlotActions.addTimeSlot(project, date, start, duration));
     }
-    componentDidMount () {
-        TimeSlotActions.loadTimeSlots(moment().week(this.state.weekNumber).startOf('week'), moment().week(this.state.weekNumber).endOf('week'))
-    }
 
     renderDays() {
         const actions = bindActionCreators(TimeSlotActions, this.props.dispatch);
         return dayNames.map((name, index) => {
-            const startOfWeek = moment().week(this.state.weekNumber).startOf('week');
+            const startOfWeek = moment().week(this.props.calendar.week).startOf('week');
             const date = startOfWeek.add(index, 'days').format('DD-MM-YYYY');
             const timeSlots = this.props.timeSlots[date] || [];
             return (
@@ -78,7 +70,7 @@ export default class CalendarSection extends React.Component {
                     <nav>
                         <ul className="pager">
                             <li className="previous"><a onClick={this.pagerPrevious}>Previous</a></li>
-                            <li className="week-header"><h4>Week: {this.state.weekNumber}</h4></li>
+                            <li className="week-header"><h4>Week: {this.props.calendar.week}</h4></li>
                             <li className="next"><a onClick={this.pagerNext}>Next</a></li>
                         </ul>
                     </nav>

@@ -5,3 +5,4 @@ export const EDIT_SUB_PROJECT = 'EDIT_SUBPROJECT';
 export const ADD_TIME_SLOT = 'ADD_TIME_SLOT';
 export const EDIT_TIME_SLOT = 'EDIT_TIMESLOT';
 export const CLEAR_TIME_SLOTS = 'CLEAR_TIMESLOTS';
+export const WEEK_CHANGE = 'WEEK_CHANGE';

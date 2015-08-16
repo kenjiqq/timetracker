@@ -1,14 +1,15 @@
 'use strict';
 import {ADD_TIME_SLOT, EDIT_TIME_SLOT, CLEAR_TIME_SLOTS} from '../constants/Actiontypes';
 import Ref from '../constants/AsyncAdapter';
+import moment from 'moment';
 
 let timeslotsRef;
 let stores, weekRef, childAddedCallback, childChangedCallback;
 
 export function init(_stores, userRef) {
     timeslotsRef = userRef.child('timeslots');
-
     stores = _stores;
+    loadTimeSlots(moment().week(_stores.getState().calendar.get('week')).startOf('week'), moment().week(_stores.getState().calendar.get('week')).endOf('week'));
 }
 
 export function loadTimeSlots(start, end) {
