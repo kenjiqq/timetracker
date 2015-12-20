@@ -4,9 +4,9 @@ import CalendarSection from '../sections/CalendarSection';
 import ProjectSection from '../sections/ProjectSection';
 
 export default class CalendarPage extends React.Component {
-    render() {
+    render () {
         return (
-            <div className="app">
+            <div className='app'>
                 <ProjectSection />
                 <CalendarSection />
             </div>

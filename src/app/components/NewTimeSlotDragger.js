@@ -12,36 +12,36 @@ class Manager extends EventEmitter {
     pos = {}
     isShown = false
 
-    show(project, subProject, activity, color, startX, startY) {
+    show (project, subProject, activity, color, startX, startY) {
         this.isShown = true;
         this.pos = {
             x: startX,
-            y: startY,
-        }
+            y: startY
+        };
         this.props = {
             project, subProject, activity, color
-        }
+        };
         this.emit(SHOW_EVENT);
     }
 
-    hide() {
+    hide () {
         this.isShown = false;
         this.pos = {};
         this.props = {};
         this.emit(HIDE_EVENT);
     }
 
-    move(dx, dy) {
+    move (dx, dy) {
         this.pos.x += dx;
         this.pos.y += dy;
         this.emit(MOVE_EVENT);
     }
 
-    getProps() {
+    getProps () {
         return this.props;
     }
 
-    getPos() {
+    getPos () {
         return this.pos;
     }
 }
@@ -58,19 +58,19 @@ export default class NewTimeSlotDragger extends React.Component {
         pos: {}
     }
 
-    static show(project, subProject, activity, color, startX, startY) {
+    static show (project, subProject, activity, color, startX, startY) {
         manager.show(project, subProject, activity, color, startX, startY);
     }
 
-    static hide() {
+    static hide () {
         manager.hide();
     }
 
-    static move(dx, dy) {
+    static move (dx, dy) {
         manager.move(dx, dy);
     }
 
-    static getPos() {
+    static getPos () {
         return manager.getPos();
     }
 
@@ -83,15 +83,15 @@ export default class NewTimeSlotDragger extends React.Component {
         this.posDiffX = elRect.left + (elRect.right - elRect.left) / 2;
         this.posDiffY = elRect.top;
         const pos = {
-            x:  manager.getPos().x - this.posDiffX,
-            y:  manager.getPos().y - this.posDiffY
-        }
+            x: manager.getPos().x - this.posDiffX,
+            y: manager.getPos().y - this.posDiffY
+        };
 
         this.setState({
             isShown: true,
             props: manager.getProps(),
             pos
-        })
+        });
     }
 
     moveListener = () => {
@@ -99,50 +99,50 @@ export default class NewTimeSlotDragger extends React.Component {
         const pos = {
             x: dragPos.x - this.posDiffX,
             y: dragPos.y - this.posDiffY
-        }
+        };
         this.setState({
             pos
-        })
+        });
     }
 
     hideListener = () => {
         this.setState({
             isShown: false,
             pos: {}
-        })
+        });
     }
 
-    componentDidMount() {
+    componentDidMount () {
         manager.on(SHOW_EVENT, this.showListener);
         manager.on(HIDE_EVENT, this.hideListener);
         manager.on(MOVE_EVENT, this.moveListener);
     }
 
-    componentWillUnmount() {
+    componentWillUnmount () {
         manager.removeListener(SHOW_EVENT, this.showListener);
         manager.removeListener(HIDE_EVENT, this.hideListener);
         manager.removeListener(MOVE_EVENT, this.moveListener);
     }
 
-    renderIfShown() {
-        if(this.state.isShown) {
+    renderIfShown () {
+        if (this.state.isShown) {
             return (
-                <TimeBox {...this.state.props} duration={0.5} hourSize={this.props.hourSize}></TimeBox>
-            )
+                <TimeBox {...this.state.props} duration={0.5} hourSize={this.props.hourSize} />
+            );
         }
     }
 
-    render() {
+    render () {
         const translateString = `translate(${this.state.pos.x || 0}px, ${this.state.pos.y || 0}px)`;
         const style = {
             WebkitTransform: translateString,
             transform: translateString,
             zIndex: 2000
-        }
+        };
         return (
-            <div ref="dragger" className="newtimeslot-container" style={style}>
+            <div ref='dragger' className='newtimeslot-container' style={style}>
                 { this.renderIfShown() }
             </div>
-        )
+        );
     }
 }

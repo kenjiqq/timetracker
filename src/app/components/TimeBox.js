@@ -10,29 +10,29 @@ export class TimeBox extends Component {
         project: PropTypes.string.isRequired,
         duration: PropTypes.number.isRequired,
         subProject: PropTypes.string.isRequired,
-        activity: PropTypes.string.isRequired,
+        activity: PropTypes.string.isRequired
     }
 
-    static formatTime(decimal) {
-        const hrs = Math.floor(decimal)
-        let min = Math.round(decimal  %1 * 60)
-        min = min < 10 ? "0" + min : min.toString();
-        return hrs + ":" + min;
+    static formatTime (decimal) {
+        const hrs = Math.floor(decimal);
+        let min = Math.round(decimal % 1 * 60);
+        min = min < 10 ? '0' + min : min.toString();
+        return hrs + ':' + min;
     }
 
-    render() {
+    render () {
         const style = {
             backgroundColor: this.props.color ? this.props.color : 'red',
-            height: this.props.duration * this.props.hourSize,
-        }
+            height: this.props.duration * this.props.hourSize
+        };
         const classNames = `timebox ${this.props.duration === 0.5 ? 'small' : ''}`;
         return (
             <div className={classNames} style={style}>
-                <div className="name">{this.props.project}</div>
-                <div className="sub-project">{this.props.subProject}</div>
-                <div className="bottom-bar">
-                    <span className="duration">{TimeBox.formatTime(this.props.duration)}</span>
-                    <span className="activity">{this.props.activity}</span>
+                <div className='name'>{this.props.project}</div>
+                <div className='sub-project'>{this.props.subProject}</div>
+                <div className='bottom-bar'>
+                    <span className='duration'>{TimeBox.formatTime(this.props.duration)}</span>
+                    <span className='activity'>{this.props.activity}</span>
                 </div>
             </div>
         );
@@ -44,8 +44,10 @@ export class TimeBoxExisting extends Component {
         ...TimeBox.propTypes,
         date: PropTypes.string.isRequired,
         id: PropTypes.string,
-        actions: PropTypes.object.isRequired,
-        start: PropTypes.number.isRequired
+        setDuration: PropTypes.func.isRequired,
+        start: PropTypes.number.isRequired,
+        hourSize: PropTypes.number.isRequired,
+        duration: PropTypes.number.isRequired
     }
 
     state = {
@@ -55,26 +57,26 @@ export class TimeBoxExisting extends Component {
         dragging: false
     }
 
-    componentDidMount() {
+    componentDidMount () {
         this.mounted = true;
         const element = this.refs.box;
         interact(element)
         .draggable({
             snap: {
                 targets: [
-                    interact.createSnapGrid({ x: 1, y: this.props.hourSize/4 })
+                    interact.createSnapGrid({ x: 1, y: this.props.hourSize / 4 })
                 ],
                 offset: 'startCoords'
-            },
+            }
         })
         .resizable({
             snap: {
                 targets: [
-                    interact.createSnapGrid({ x: 1, y: this.props.hourSize/4 })
+                    interact.createSnapGrid({ x: 1, y: this.props.hourSize / 4 })
                 ],
                 offset: 'startCoords'
             },
-            axis: 'y',
+            axis: 'y'
         })
         .on('dragstart', (event) => {
             this.setState({
@@ -90,7 +92,7 @@ export class TimeBoxExisting extends Component {
             });
         })
         .on('dragend', (event) => {
-            if(this.mounted) {
+            if (this.mounted) {
                 this.setState({
                     posX: undefined,
                     posY: undefined,
@@ -106,48 +108,47 @@ export class TimeBoxExisting extends Component {
         })
         .on('resizemove', (event) => {
             const newHeight = event.pageY - this.state.resizeY;
-            if(newHeight >= this.props.hourSize / 2) {
+            if (newHeight >= this.props.hourSize / 2) {
                 this.setState({
                     duration: newHeight / this.props.hourSize
                 });
             }
         })
         .on('resizeend', (event) => {
-            this.props.actions.setDuration(this.props.id, this.props.date, this.state.duration);
+            this.props.setDuration(this.props.id, this.props.date, this.state.duration);
             this.setState({
                 duration: undefined,
                 resizeY: undefined
             });
-        })
-
+        });
     }
 
-    componentWillUnmount() {
+    componentWillUnmount () {
         this.mounted = false;
     }
 
-    render() {
-        const {duration, start, date, id, actions, ...rest} = this.props;
-        const x = this.state.posX !== undefined ? this.state.posX : 0,
-        y = this.state.posY !== undefined ? this.state.posY : start * this.props.hourSize,
-        translateString = `translate(${x}px, ${y}px)`;
+    render () {
+        const {duration, start, date, id, ...rest} = this.props;
+        const x = this.state.posX !== undefined ? this.state.posX : 0;
+        const y = this.state.posY !== undefined ? this.state.posY : start * this.props.hourSize;
+        const translateString = `translate(${x}px, ${y}px)`;
 
         const style = {
             WebkitTransform: translateString,
             transform: translateString,
             zIndex: this.state.dragging ? 2000 : undefined
-        }
+        };
 
         const dataAttrs = {
             'data-id': id,
             'data-date': date,
             'data-type': 'timebox'
-        }
+        };
 
         return (
-            <li ref="box" className="timebox-container" style={style} {...dataAttrs}>
-                <TimeBox {...rest} duration={this.state.duration || duration}></TimeBox>
+            <li ref='box' className='timebox-container' style={style} {...dataAttrs}>
+                <TimeBox {...rest} duration={this.state.duration || duration} />
             </li>
-        )
+        );
     }
 };

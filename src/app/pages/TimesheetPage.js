@@ -3,9 +3,9 @@ import React from 'react';
 import TimesheetSection from '../sections/TimesheetSection';
 
 export default class TimesheetPage extends React.Component {
-    render() {
+    render () {
         return (
-            <div className="app">
+            <div className='app'>
                 <TimesheetSection />
             </div>
         );

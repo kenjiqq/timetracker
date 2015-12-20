@@ -1,19 +1,21 @@
-var path = require('path'),
-    HtmlWebpackPlugin = require('html-webpack-plugin'),
-    ExtractTextPlugin = require('extract-text-webpack-plugin'),
-    Webpack = require('webpack');
+var path = require('path');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var Webpack = require('webpack');
 
-var dev = true; //Temp
+var dev = true; // Temp
 
 var config = {
+    devtool: 'cheap-module-eval-source-map',
     entry: [
-        'babel-core/polyfill',
+        'babel-polyfill/dist/polyfill',
         './src/app/app',
         './src/assets/styles/main'
     ],
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'static/bundle.js',
+        filename: 'bundle.js',
+        publicPath: '/'
     },
     resolve: {
         extensions: ['', '.js', '.scss']
@@ -24,27 +26,42 @@ var config = {
             inject: 'body'
         }),
         new Webpack.HotModuleReplacementPlugin(),
+        new Webpack.NoErrorsPlugin()
     ],
     module: {
         loaders: [{
             test: /\.js$/,
-            loaders: ['react-hot', 'babel'],
-            exclude: /node_modules/
+            loader: 'babel',
+            exclude: /node_modules/,
+            query: {
+                cacheDirectory: true,
+                plugins: [
+                    ['react-transform', {
+                        // omit HMR plugin by default and _only_ load in hot mode
+                        transforms: [{
+                            'transform': 'react-transform-hmr',
+                            'imports': ['react'],
+                            'locals': ['module']
+                        }, {
+                            transform: 'react-transform-catch-errors',
+                            imports: ['react', 'redbox-react']
+                        }]
+                    }]
+                ],
+                presets: ['es2015', 'react', 'stage-0']
+            }
         }, {
             test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff2?$|\.ttf$|\.eot$/,
-            loader: "file"
-        }, ]
+            loader: 'file'
+        }]
     }
 };
 
 if (dev) {
-    config.entry.push(
-        'webpack-dev-server/client?http://localhost:3000',
-        'webpack/hot/only-dev-server'
-    );
+    config.entry.unshift('webpack-hot-middleware/client');
     config.module.loaders.push({
         test: /\.scss$/,
-        loaders: ["style", "css", "sass"]
+        loaders: ['style', 'css', 'sass']
     });
 } else {
     config.plugins.push(
@@ -53,7 +70,7 @@ if (dev) {
 
     config.module.loaders.push({
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract("css!sass")
+        loader: ExtractTextPlugin.extract('css!sass')
     });
 }
 

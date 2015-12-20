@@ -1,42 +1,64 @@
 'use strict';
-import {ADD_PROJECT, EDIT_PROJECT, ADD_SUB_PROJECT, EDIT_SUB_PROJECT} from '../constants/actionTypes';
-import Ref from '../constants/AsyncAdapter';
+import {ADD_PROJECT, EDIT_PROJECT, ADD_SUB_PROJECT, EDIT_SUB_PROJECT, ADD_PROJECT_BATCH, ADD_SUB_PROJECT_BATCH} from '../constants/actionTypes';
 
 let projectsRef;
 let subProjectsRef;
 
-export function init(stores, userRef) {
+export function init (stores, userRef) {
     projectsRef = userRef.child('projects');
     subProjectsRef = userRef.child('subProjects');
-    
-    projectsRef.on('child_added', snapshot => {
-        stores.dispatch({type: ADD_PROJECT, id: snapshot.key(), ...snapshot.val()});
+
+    projectsRef.once('value', snapshot => {
+        const projectObj = snapshot.val();
+        const projects = Object.keys(projectObj).map(id => ({ id, ...projectObj[id] }));
+        stores.dispatch({type: ADD_PROJECT_BATCH, items: projects});
     });
-    projectsRef.on("child_changed", snapshot => {
-        stores.dispatch({type: EDIT_PROJECT, id: snapshot.key(), ...snapshot.val()});
-    });
-    subProjectsRef.on('child_added', snapshot => {
-        stores.dispatch({type: ADD_SUB_PROJECT, id: snapshot.key(), ...snapshot.val()});
-    });
-    subProjectsRef.on("child_changed", snapshot => {
-        stores.dispatch({type: EDIT_SUB_PROJECT, id: snapshot.key(), ...snapshot.val()});
+
+    subProjectsRef.once('value', snapshot => {
+        const subProjectsObj = snapshot.val();
+        const subProjects = Object.keys(subProjectsObj).map(id => ({ id, ...subProjectsObj[id] }));
+        stores.dispatch({type: ADD_SUB_PROJECT_BATCH, items: subProjects});
     });
 }
 
-export function addProject(code, name, color) {
-    projectsRef.push({code, name, color});
+export default {
+    addProject, editProject, addSubProject, editSubProject
+};
+
+function addProject (code, name, color) {
+    return dispatch => {
+        const project = {code, name, color};
+        const newRef = projectsRef.push(project, error => {
+            !error && dispatch({type: ADD_PROJECT, id: newRef.key(), ...project});
+        });
+    };
 }
 
-export function editProject(id, code, name, color) {
-    const projectRef = projectsRef.child(id);
-    projectRef.update({code, name, color});
+function editProject (id, code, name, color) {
+    return dispatch => {
+        const projectRef = projectsRef.child(id);
+        const project = {code, name, color};
+        projectRef.update(project, error => {
+            !error && dispatch({type: EDIT_PROJECT, id: id, ...project});
+        });
+    };
 }
 
-export function addSubProject(projectId, name, color) {
-    subProjectsRef.push({projectId, name, color});
+function addSubProject (projectId, name, color) {
+    return dispatch => {
+        const subProject = {projectId, name, color};
+        const newRef = subProjectsRef.push(subProject, error => {
+            !error && dispatch({type: ADD_SUB_PROJECT, id: newRef.key(), ...subProject});
+        });
+    };
 }
 
-export function editSubProject(subProjectId, projectId, name, color) {
-    const subProjectRef = subProjectsRef.child(subProjectId);
-    subProjectRef.update({name, color});
+function editSubProject (subProjectId, projectId, name, color) {
+    return dispatch => {
+        const subProjectRef = subProjectsRef.child(subProjectId);
+        const subProject = {name, color};
+        subProjectRef.update(subProject, error => {
+            !error && dispatch({type: EDIT_SUB_PROJECT, id: subProjectId, projectId: projectId, ...subProject});
+        });
+    };
 }

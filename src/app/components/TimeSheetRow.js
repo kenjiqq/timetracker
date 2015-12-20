@@ -8,15 +8,15 @@ export default class Timesheet extends Component {
         name: PropTypes.string.isRequired
     }
 
-    render() {
+    render () {
         const startOfWeek = moment().week(this.props.week).startOf('week');
-        var cells = [0,1,1,1,1,1,1].map((inc, index) => {
+        var cells = [0, 1, 1, 1, 1, 1, 1].map((inc, index) => {
             const day = startOfWeek.add(inc, 'days').format('DD-MM-YYYY');
             return (
                 <td key={ day }>
                     { this.props.daySums[day] || '-'}
                 </td>
-            )
+            );
         });
         return (
             <tr>
@@ -25,6 +25,6 @@ export default class Timesheet extends Component {
                 </td>
                 { cells }
             </tr>
-        )
+        );
     }
 }

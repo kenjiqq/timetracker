@@ -1,10 +1,10 @@
 import React, {PropTypes} from 'react';
-import ProjectSelect from './ProjectSelect';
 
 export default class ProjectForm extends React.Component {
     static propTypes = {
         project: PropTypes.object,
-        actions: PropTypes.object.isRequired
+        addProject: PropTypes.func.isRequired,
+        editProject: PropTypes.func.isRequired
     }
 
     state = {
@@ -29,40 +29,40 @@ export default class ProjectForm extends React.Component {
     handleSubmit = (event) => {
         event.preventDefault();
         const {projectId, projectCode, projectName, projectColor} = this.state;
-        if(projectId) {
-            this.props.actions.editProject(projectId, projectCode, projectName, projectColor);
+        if (projectId) {
+            this.props.editProject(projectId, projectCode, projectName, projectColor);
         } else {
-            this.props.actions.addProject(projectCode, projectName, projectColor);
+            this.props.addProject(projectCode, projectName, projectColor);
         }
     }
 
-    componentWillReceiveProps(newProps) {
-        if(newProps.project !== this.props.project) {
+    componentWillReceiveProps (newProps) {
+        if (newProps.project !== this.props.project) {
             this.setState({
                 projectId: newProps.project && newProps.project.id || undefined,
                 projectName: newProps.project && newProps.project.name || '',
                 projectCode: newProps.project && newProps.project.code || '',
                 projectColor: newProps.project && newProps.project.color || ''
-            })
+            });
         }
     }
 
-    render() {
+    render () {
         return (
-            <form role="form" className="project-form" onSubmit={this.handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="projectCodeField">Code</label>
-                    <input type="text" className="form-control" id="projectCodeField" value={this.state.projectCode} onChange={this.handleProjectCodeChange}></input>
+            <form role='form' className='project-form' onSubmit={this.handleSubmit}>
+                <div className='form-group'>
+                    <label htmlFor='projectCodeField'>Code</label>
+                    <input type='text' className='form-control' id='projectCodeField' value={this.state.projectCode} onChange={this.handleProjectCodeChange}></input>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="projectNameField">Name</label>
-                    <input type="text" className="form-control" id="projectNameField" value={this.state.projectName} onChange={this.handleProjectNameChange}></input>
+                <div className='form-group'>
+                    <label htmlFor='projectNameField'>Name</label>
+                    <input type='text' className='form-control' id='projectNameField' value={this.state.projectName} onChange={this.handleProjectNameChange}></input>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="projectColorPicker">Color</label>
-                    <input type="text" className="form-control" id="projectColorPicker" value={this.state.projectColor} onChange={this.handleProjectColorChange}></input>
+                <div className='form-group'>
+                    <label htmlFor='projectColorPicker'>Color</label>
+                    <input type='text' className='form-control' id='projectColorPicker' value={this.state.projectColor} onChange={this.handleProjectColorChange}></input>
                 </div>
-                <button type="Submit" className="btn btn-primary">{this.state.projectId ? 'Edit project' : 'Add project'}</button>
+                <button type='Submit' className='btn btn-primary'>{this.state.projectId ? 'Edit project' : 'Add project'}</button>
             </form>
         );
     }

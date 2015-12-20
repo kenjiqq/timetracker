@@ -1,13 +1,13 @@
 'use strict';
 
 import {WEEK_CHANGE} from '../constants/ActionTypes';
-import Immutable, {Map} from 'immutable';
+import {Map} from 'immutable';
 import moment from 'moment';
 
 const initialState = Map({week: moment().week()});
 
-export default function projects(state = initialState, action) {
-    if(!action) {
+export default function projects (state = initialState, action) {
+    if (!action) {
         return state;
     }
     const {week} = action;

@@ -1,11 +1,11 @@
 import React, {PropTypes} from 'react';
-import ProjectSelect from './ProjectSelect';
 
 export default class SubProjectForm extends React.Component {
     static propTypes = {
         project: PropTypes.object,
         subProject: PropTypes.object,
-        actions: PropTypes.object.isRequired
+        editSubProject: PropTypes.func.isRequired,
+        addSubProject: PropTypes.func.isRequired
     }
 
     state = {
@@ -24,36 +24,36 @@ export default class SubProjectForm extends React.Component {
 
     handleSubmit = (event) => {
         event.preventDefault();
-        const {projectId, projectCode, projectName, projectColor} = this.state;
-        if(projectId) {
-            this.props.actions.editSubProject(projectId, this.props.project.id, projectName, projectColor);
+        const {projectId, projectName, projectColor} = this.state;
+        if (projectId) {
+            this.props.editSubProject(projectId, this.props.project.id, projectName, projectColor);
         } else {
-            this.props.actions.addSubProject(this.props.project.id, projectName, projectColor);
+            this.props.addSubProject(this.props.project.id, projectName, projectColor);
         }
     }
 
-    componentWillReceiveProps(newProps) {
-        if(newProps.subProject !== this.props.subProject) {
+    componentWillReceiveProps (newProps) {
+        if (newProps.subProject !== this.props.subProject) {
             this.setState({
                 projectId: newProps.subProject && newProps.subProject.id || undefined,
                 projectName: newProps.subProject && newProps.subProject.name || '',
                 projectColor: newProps.subProject && newProps.subProject.color || ''
-            })
+            });
         }
     }
 
-    render() {
+    render () {
         return (
-            <form role="form" className="sub-project-form" onSubmit={this.handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="subProjectNameField">Name</label>
-                    <input type="text" className="form-control" id="subProjectNameField" value={this.state.projectName} onChange={this.handleProjectNameChange}></input>
+            <form role='form' className='sub-project-form' onSubmit={this.handleSubmit}>
+                <div className='form-group'>
+                    <label htmlFor='subProjectNameField'>Name</label>
+                    <input type='text' className='form-control' id='subProjectNameField' value={this.state.projectName} onChange={this.handleProjectNameChange}></input>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="subProjectColorPicker">Color</label>
-                    <input type="text" className="form-control" id="subProjectColorPicker" value={this.state.projectColor} onChange={this.handleProjectColorChange}></input>
+                <div className='form-group'>
+                    <label htmlFor='subProjectColorPicker'>Color</label>
+                    <input type='text' className='form-control' id='subProjectColorPicker' value={this.state.projectColor} onChange={this.handleProjectColorChange}></input>
                 </div>
-                <button type="Submit" className="btn btn-primary">{this.state.projectId ? 'Edit sub project' : 'Add sub project'}</button>
+                <button type='Submit' className='btn btn-primary'>{this.state.projectId ? 'Edit sub project' : 'Add sub project'}</button>
             </form>
         );
     }

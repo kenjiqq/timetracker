@@ -17,13 +17,13 @@ export default class Timesheet extends Component {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    generateReportData(timeSlots) {
+    generateReportData (timeSlots) {
         const report = {};
-        for(var date in this.props.timeSlots) {
+        for (var date in this.props.timeSlots) {
             const timeSlots = this.props.timeSlots[date];
             timeSlots.forEach(timeSlot => {
                 const { project, subProject, duration, activity } = timeSlot;
-                report[project] = report[project]  || {};
+                report[project] = report[project] || {};
                 report[project][subProject] = report[project][subProject] || {};
                 report[project][subProject][activity] = report[project][subProject][activity] || {};
                 report[project][subProject][activity][date] = report[project][subProject][activity][date] || 0;
@@ -32,63 +32,62 @@ export default class Timesheet extends Component {
         }
         this.setState({
             report
-        })
+        });
     }
 
     componentWillReceiveProps (newProps) {
-        if(this.props.timeSlots !== newProps.timeSlots) {
+        if (this.props.timeSlots !== newProps.timeSlots) {
             this.generateReportData(newProps.timeSlots);
         }
     }
 
-    componentDidMount() {
-        this.generateReportData(this.props.timeSlots)
+    componentDidMount () {
+        this.generateReportData(this.props.timeSlots);
     }
 
-    renderWeekHeaders() {
+    renderWeekHeaders () {
         const startOfWeek = moment().week(this.props.week).startOf('week');
-        return [0,1,1,1,1,1,1].map((inc, index) => {
+        return [0, 1, 1, 1, 1, 1, 1].map((inc, index) => {
             return (
                 <th key={index}>{ Timesheet.capsFirstLetter(startOfWeek.add(inc, 'days').format('dddd DD-MM-YYYY')) }</th>
-            )
+            );
         });
     }
 
-    renderDayTotals() {
+    renderDayTotals () {
         const startOfWeek = moment().week(this.props.week).startOf('week');
-        return [0,1,1,1,1,1,1].map((inc, index) => {
-             const day = startOfWeek.add(inc, 'days').format('DD-MM-YYYY');
-             const sum = this.props.timeSlots[day] && this.props.timeSlots[day].reduce((sum, timeSlot) => {
-                 return sum + timeSlot.duration;
-             }, 0) || 0;
+        return [0, 1, 1, 1, 1, 1, 1].map((inc, index) => {
+            const day = startOfWeek.add(inc, 'days').format('DD-MM-YYYY');
+            const sum = this.props.timeSlots[day] && this.props.timeSlots[day].reduce((sum, timeSlot) => {
+                return sum + timeSlot.duration;
+            }, 0) || 0;
             return (
                 <td key={index}>{ sum }</td>
-            )
+            );
         });
     }
 
-    renderProjectRows() {
+    renderProjectRows () {
         const rows = [];
-        for(var projectId in this.state.report) {
-            for(var subProjectId in this.state.report[projectId]) {
-                for(var activity in this.state.report[projectId][subProjectId]) {
+        for (var projectId in this.state.report) {
+            for (var subProjectId in this.state.report[projectId]) {
+                for (var activity in this.state.report[projectId][subProjectId]) {
                     const project = this.props.projects.find(project => project.id === projectId);
                     const subProject = project.subProjects.find(subProject => subProject.id === subProjectId);
                     const label = project.name + ' ' + subProject.name + ' ' + activity;
                     rows.push(
-                        <TimeSheetRow key={projectId+subProjectId+activity} week={this.props.week} daySums={this.state.report[projectId][subProjectId][activity]} name={label} />
+                        <TimeSheetRow key={projectId + subProjectId + activity} week={this.props.week} daySums={this.state.report[projectId][subProjectId][activity]} name={label} />
                     );
                 }
             }
         }
         return rows;
-
     }
 
-    render() {
+    render () {
         return (
-            <div className="timesheet">
-                <table className="table-bordered timesheet-table">
+            <div className='timesheet'>
+                <table className='table-bordered timesheet-table'>
                     <tbody>
                         <tr>
                             <th>Project</th>

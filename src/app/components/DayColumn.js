@@ -1,7 +1,6 @@
 'use strict';
 
 import React, { PropTypes, Component } from 'react';
-import ReactDOM from 'react-dom';
 import {TimeBoxExisting} from './TimeBox';
 import interact from 'interact.js';
 import classnames from 'classnames';
@@ -13,28 +12,31 @@ export default class DayColumn extends Component {
         timeSlots: PropTypes.array.isRequired,
         projects: PropTypes.array.isRequired,
         name: PropTypes.string.isRequired,
-        actions: PropTypes.object.isRequired,
+        moveDay: PropTypes.func.isRequired,
+        addTimeSlot: PropTypes.func.isRequired,
+        setStartHour: PropTypes.func.isRequired,
+        setDuration: PropTypes.func.isRequired,
         hourSize: PropTypes.number.isRequired
     }
 
     state = {
-        dropTarget: false,
+        dropTarget: false
     }
 
-    calcStartTime(dropEl, dragEl) {
-        const zoneRect = dragEl.getBoundingClientRect(),
-        dropRect = dropEl.getBoundingClientRect(),
-        offset = dropRect.top - zoneRect.top;
+    calcStartTime (dropEl, dragEl) {
+        const zoneRect = dragEl.getBoundingClientRect();
+        const dropRect = dropEl.getBoundingClientRect();
+        const offset = dropRect.top - zoneRect.top;
         return Math.round((offset / this.props.hourSize) * 4) / 4;
     }
 
-    calcStartTimeFromCoords(ypos, dropEl) {
-        const dropRect = dropEl.getBoundingClientRect(),
-        offset = ypos - dropRect.top;
+    calcStartTimeFromCoords (ypos, dropEl) {
+        const dropRect = dropEl.getBoundingClientRect();
+        const offset = ypos - dropRect.top;
         return Math.round((offset / this.props.hourSize) * 4) / 4;
     }
 
-    componentDidMount() {
+    componentDidMount () {
         const element = this.refs.day;
         interact(element)
         .dropzone({
@@ -51,21 +53,21 @@ export default class DayColumn extends Component {
             },
             ondrop: (event) => {
                 switch (event.relatedTarget.getAttribute('data-type')) {
-                    case 'timebox':
-                        const timeSlotId = event.relatedTarget.getAttribute('data-id');
-                        const droppedTimeSlotDate = event.relatedTarget.getAttribute('data-date');
-                        droppedTimeSlotDate !== this.props.date ?
-                            this.props.actions.moveDay(timeSlotId, droppedTimeSlotDate, this.props.date, this.calcStartTime(event.relatedTarget,  event.target)) :
-                            this.props.actions.setStartHour(timeSlotId, this.props.date, this.calcStartTime(event.relatedTarget,  event.target));
-                        break;
-                    case 'new-timeslot':
-                        const project = event.relatedTarget.getAttribute('data-project');
-                        const subProject = event.relatedTarget.getAttribute('data-subproject');
-                        const activity = event.relatedTarget.getAttribute('data-activity');
-                        const startTime = this.calcStartTimeFromCoords(NewTimeSlotDragger.getPos().y, event.target);
+                case 'timebox':
+                    const timeSlotId = event.relatedTarget.getAttribute('data-id');
+                    const droppedTimeSlotDate = event.relatedTarget.getAttribute('data-date');
+                    droppedTimeSlotDate !== this.props.date
+                        ? this.props.moveDay(timeSlotId, droppedTimeSlotDate, this.props.date, this.calcStartTime(event.relatedTarget, event.target))
+                        : this.props.setStartHour(timeSlotId, this.props.date, this.calcStartTime(event.relatedTarget, event.target));
+                    break;
+                case 'new-timeslot':
+                    const project = event.relatedTarget.getAttribute('data-project');
+                    const subProject = event.relatedTarget.getAttribute('data-subproject');
+                    const activity = event.relatedTarget.getAttribute('data-activity');
+                    const startTime = this.calcStartTimeFromCoords(NewTimeSlotDragger.getPos().y, event.target);
 
-                        this.props.actions.addTimeSlot(project, subProject, activity, this.props.date, startTime, 1);
-                        break;
+                    this.props.addTimeSlot(project, subProject, activity, this.props.date, startTime, 1);
+                    break;
                 }
                 this.setState({
                     dropTarget: false
@@ -74,7 +76,7 @@ export default class DayColumn extends Component {
         });
     }
 
-    render() {
+    render () {
         const timeNodes = this.props.timeSlots.map((timeSlot) => {
             const project = this.props.projects.find(project => timeSlot.project === project.id);
             const subProject = project.subProjects.find(subProject => subProject.id === timeSlot.subProject);
@@ -84,30 +86,30 @@ export default class DayColumn extends Component {
                 subProject: subProject.name,
                 color: subProject.color || project.color,
                 hourSize: this.props.hourSize,
-                actions: this.props.actions,
                 activity: timeSlot.activity,
                 duration: timeSlot.duration,
                 start: timeSlot.start,
-                id: timeSlot.id
-            }
+                id: timeSlot.id,
+                setDuration: this.props.setDuration
+            };
             return (
                 <TimeBoxExisting key={timeSlot.id} {...props} />
             );
         });
 
-        //Set classes
+        // Set classes
         const classes = classnames({
             'day': true,
             'list-unstyled': true,
-            'drop-target': this.state.dropTarget,
+            'drop-target': this.state.dropTarget
         });
         return (
-            <li className="day-column">
-                <div className="header">
+            <li className='day-column'>
+                <div className='header'>
                     <div>{this.props.name}</div>
                     <div>{this.props.date}</div>
                 </div>
-                <ul className={classes} ref="day">
+                <ul className={classes} ref='day'>
                     {timeNodes}
                 </ul>
             </li>

@@ -10,33 +10,33 @@ export default class ProjectItem extends React.Component {
         expanded: false
     }
 
-    toggleProject  = () => {
+    toggleProject = () => {
         this.setState({
             expanded: !this.state.expanded
         });
     }
 
-    renderExpanded() {
+    renderExpanded () {
         return this.props.project.subProjects.map(subProject => {
             return (
-                <li key={subProject.id} className="list-group-item reset-padding">
-                    <SubProjectItem subProject={subProject} defaultColor={this.props.project.color} project={this.props.project}></SubProjectItem>
+                <li key={subProject.id} className='list-group-item reset-padding'>
+                    <SubProjectItem subProject={subProject} defaultColor={this.props.project.color} project={this.props.project} />
                 </li>
-            )
+            );
         });
     }
 
-    render() {
+    render () {
         const projctStyle = {
             backgroundColor: this.props.project.color
-        }
+        };
         return (
-            <div className="project panel panel-default">
-                <div style={projctStyle} className="panel-heading" onClick={this.toggleProject}>
-                    <h5 className="panel-title">{this.props.project.name}</h5>
+            <div className='project panel panel-default'>
+                <div style={projctStyle} className='panel-heading' onClick={this.toggleProject}>
+                    <h5 className='panel-title'>{this.props.project.name}</h5>
                 </div>
                 <div className={`panel-collapse collapse ${ this.state.expanded ? 'in' : ''}`}>
-                    <ul className="sub-projects list-group">
+                    <ul className='sub-projects list-group'>
                         {this.renderExpanded()}
                     </ul>
                 </div>
