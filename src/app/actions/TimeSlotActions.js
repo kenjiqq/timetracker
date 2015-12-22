@@ -15,12 +15,11 @@ export default {
 };
 
 export function loadTimeSlots (start, end) {
-    // TODO: look at this
     return dispatch => {
         dispatch({type: CLEAR_TIME_SLOTS});
         weekRef = timeslotsRef.orderByChild('date').startAt(start.format('DD-MM-YYYY')).endAt(end.format('DD-MM-YYYY'));
         weekRef.once('value', snapshot => {
-            const timeSlotObj = snapshot.val();
+            const timeSlotObj = snapshot.val() || {};
             const timeSlots = Object.keys(timeSlotObj).map(id => ({ id, ...timeSlotObj[id] }));
             dispatch({type: ADD_TIME_SLOT_BATCH, items: timeSlots});
         });
@@ -108,9 +107,10 @@ function addTimeSlot (project, subProject, activity, date, start, duration) {
         if (conflict || start < 0) {
             return false;
         }
-        const timeSlot = {project, subProject, activity, date, start, duration};
-        const newRef = timeslotsRef.push(timeSlot, error => {
-            !error && dispatch({type: ADD_TIME_SLOT, id: newRef.key(), ...timeSlot});
+        const newRef = timeslotsRef.push();
+        const timeSlot = {id: newRef.key(), project, subProject, activity, date, start, duration};
+        newRef.set(timeSlot, error => {
+            !error && dispatch({type: ADD_TIME_SLOT, ...timeSlot});
         });
     };
 }

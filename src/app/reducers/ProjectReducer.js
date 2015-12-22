@@ -1,61 +1,28 @@
 'use strict';
 
-import {ADD_PROJECT, EDIT_PROJECT, ADD_SUB_PROJECT, EDIT_SUB_PROJECT, ADD_PROJECT_BATCH, ADD_SUB_PROJECT_BATCH} from '../constants/ActionTypes';
-import {Map, List} from 'immutable';
+import {ADD_PROJECT, EDIT_PROJECT, ADD_SUB_PROJECT, ADD_PROJECT_BATCH} from '../constants/ActionTypes';
+import {Map, List, fromJS} from 'immutable';
 
-const initialState = List();
+function makeProject ({id, code, color, name, subProjects}) {
+    return fromJS({id, code, color, name, subProjects: subProjects || []});
+}
 
-export default function projects (state = initialState, action) {
+export default function projects (state = Map(), action) {
     if (!action) {
         return state;
     }
-    const {id, projectId, code, color, name, items} = action;
-    switch (action.type) {
+    const {type, payload} = action;
+    switch (type) {
     case ADD_PROJECT_BATCH:
-        return items.reduce((state, project) => {
-            return state.push(Map({
-                ...project,
-                subProjects: List()
-            }));
+        return payload.reduce((state, project) => {
+            return state.set(project.id, makeProject(project));
         }, state);
     case ADD_PROJECT:
-        return state.push(Map({
-            id,
-            code,
-            color,
-            name,
-            subProjects: List()
-        }));
+        return state.set(payload.id, makeProject({...payload, subProjcts: []}));
     case EDIT_PROJECT:
-        return state.map(project => {
-            return project.get('id') !== id ? project : project.withMutations(map => {
-                map.set('code', code).set('name', name).set('color', color);
-            });
-        });
-    case ADD_SUB_PROJECT_BATCH:
-        return items.reduce((state, subProject) => {
-            const {projectId, ...rest} = subProject;
-            return state.updateIn([state.findIndex(project => project.get('id') === projectId), 'subProjects'], List(),
-                subProjects => subProjects.push(Map({
-                    ...rest
-                })));
-        }, state);
+        return state.update(payload.id, project => project.merge(payload));
     case ADD_SUB_PROJECT:
-        return state.updateIn([state.findIndex(project => project.get('id') === projectId), 'subProjects'], List(),
-            subProjects => subProjects.push(Map({
-                id,
-                name,
-                color
-            })));
-    case EDIT_SUB_PROJECT:
-        const projectIndex = state.findIndex(project => project.get('id') === projectId);
-        const subProjectIndex = state.get(projectIndex).get('subProjects').findIndex(subProject => subProject.get('id') === id);
-        const newState = state.updateIn([projectIndex, 'subProjects', subProjectIndex], subProject => {
-            return subProject.withMutations(map => {
-                map.set('name', name).set('color', color);
-            });
-        });
-        return newState;
+        return state.updateIn([payload.projectId, 'subProjects'], List(), subProjects => subProjects.push(payload.id));
     default:
         return state;
     }

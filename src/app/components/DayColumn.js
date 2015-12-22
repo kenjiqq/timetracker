@@ -10,7 +10,8 @@ export default class DayColumn extends Component {
     static propTypes = {
         date: PropTypes.string.isRequired,
         timeSlots: PropTypes.array.isRequired,
-        projects: PropTypes.array.isRequired,
+        projects: PropTypes.object.isRequired,
+        subProjects: PropTypes.object.isRequired,
         name: PropTypes.string.isRequired,
         moveDay: PropTypes.func.isRequired,
         addTimeSlot: PropTypes.func.isRequired,
@@ -78,8 +79,8 @@ export default class DayColumn extends Component {
 
     render () {
         const timeNodes = this.props.timeSlots.map((timeSlot) => {
-            const project = this.props.projects.find(project => timeSlot.project === project.id);
-            const subProject = project.subProjects.find(subProject => subProject.id === timeSlot.subProject);
+            const project = this.props.projects[timeSlot.project] || {};
+            const subProject = this.props.subProjects[timeSlot.subProject] || {};
             const props = {
                 date: this.props.date,
                 project: project.name,

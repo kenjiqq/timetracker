@@ -4,6 +4,7 @@ import SubProjectForm from '../components/SubProjectForm';
 import ProjectSelect from '../components/ProjectSelect';
 import ProjectActions from '../actions/ProjectActions';
 import { connect } from 'react-redux';
+import { projectsListComputedSelector } from '../selectors/projectSelectors';
 
 class EditProjectSection extends React.Component {
     static propTypes = {
@@ -65,9 +66,4 @@ class EditProjectSection extends React.Component {
     }
 };
 
-function select (state) {
-    return {
-        projects: state.projects.toJS()
-    };
-}
-export default connect(select, ProjectActions)(EditProjectSection);
+export default connect(projectsListComputedSelector, ProjectActions)(EditProjectSection);

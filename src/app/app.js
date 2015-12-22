@@ -68,9 +68,9 @@ class TimeTrackerApp extends React.Component {
 var routes = (
     <Router>
         <Route component={TimeTrackerApp}>
-            <Route path='/' component={CalendarPage}/>
-            <Route path='/projects' components={ProjectEditPage} />
-            <Route path='/timesheet' components={TimesheetPage} />
+            <Route path='/' component={CalendarPage} />
+            <Route path='/projects' component={ProjectEditPage} />
+            <Route path='/timesheet' component={TimesheetPage} />
         </Route>
     </Router>
 );

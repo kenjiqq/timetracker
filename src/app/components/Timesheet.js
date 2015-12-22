@@ -5,7 +5,8 @@ import TimeSheetRow from './TimeSheetRow';
 export default class Timesheet extends Component {
     static propTypes = {
         timeSlots: PropTypes.object.isRequired,
-        projects: PropTypes.array.isRequired,
+        projects: PropTypes.object.isRequired,
+        subProjects: PropTypes.object.isRequired,
         week: PropTypes.number.isRequired
     }
 
@@ -18,10 +19,9 @@ export default class Timesheet extends Component {
     }
 
     generateReportData (timeSlots) {
-        const report = {};
-        for (var date in this.props.timeSlots) {
-            const timeSlots = this.props.timeSlots[date];
-            timeSlots.forEach(timeSlot => {
+        const report = Object.keys(timeSlots).reduce((report, date) => {
+            const dateTimeSlots = timeSlots[date];
+            dateTimeSlots.forEach(timeSlot => {
                 const { project, subProject, duration, activity } = timeSlot;
                 report[project] = report[project] || {};
                 report[project][subProject] = report[project][subProject] || {};
@@ -29,7 +29,8 @@ export default class Timesheet extends Component {
                 report[project][subProject][activity][date] = report[project][subProject][activity][date] || 0;
                 report[project][subProject][activity][date] += duration;
             });
-        }
+            return report;
+        }, {});
         this.setState({
             report
         });
@@ -72,8 +73,8 @@ export default class Timesheet extends Component {
         for (var projectId in this.state.report) {
             for (var subProjectId in this.state.report[projectId]) {
                 for (var activity in this.state.report[projectId][subProjectId]) {
-                    const project = this.props.projects.find(project => project.id === projectId);
-                    const subProject = project.subProjects.find(subProject => subProject.id === subProjectId);
+                    const project = this.props.projects[projectId];
+                    const subProject = this.props.subProjects[subProjectId];
                     const label = project.name + ' ' + subProject.name + ' ' + activity;
                     rows.push(
                         <TimeSheetRow key={projectId + subProjectId + activity} week={this.props.week} daySums={this.state.report[projectId][subProjectId][activity]} name={label} />

@@ -1,5 +1,6 @@
 'use strict';
 import {ADD_PROJECT, EDIT_PROJECT, ADD_SUB_PROJECT, EDIT_SUB_PROJECT, ADD_PROJECT_BATCH, ADD_SUB_PROJECT_BATCH} from '../constants/actionTypes';
+import {fromFirebaseList} from '../firebase/utils';
 
 let projectsRef;
 let subProjectsRef;
@@ -9,15 +10,21 @@ export function init (stores, userRef) {
     subProjectsRef = userRef.child('subProjects');
 
     projectsRef.once('value', snapshot => {
-        const projectObj = snapshot.val();
-        const projects = Object.keys(projectObj).map(id => ({ id, ...projectObj[id] }));
-        stores.dispatch({type: ADD_PROJECT_BATCH, items: projects});
+        const projectObj = snapshot.val() || {};
+        const projects = Object.keys(projectObj).map(id => {
+            return {
+                id,
+                ...projectObj[id],
+                subProjects: fromFirebaseList(projectObj[id].subProjects)
+            };
+        });
+        stores.dispatch({type: ADD_PROJECT_BATCH, payload: projects});
     });
 
     subProjectsRef.once('value', snapshot => {
-        const subProjectsObj = snapshot.val();
+        const subProjectsObj = snapshot.val() || {};
         const subProjects = Object.keys(subProjectsObj).map(id => ({ id, ...subProjectsObj[id] }));
-        stores.dispatch({type: ADD_SUB_PROJECT_BATCH, items: subProjects});
+        stores.dispatch({type: ADD_SUB_PROJECT_BATCH, payload: subProjects});
     });
 }
 
@@ -27,9 +34,10 @@ export default {
 
 function addProject (code, name, color) {
     return dispatch => {
-        const project = {code, name, color};
-        const newRef = projectsRef.push(project, error => {
-            !error && dispatch({type: ADD_PROJECT, id: newRef.key(), ...project});
+        const newRef = projectsRef.push();
+        const project = {id: newRef.key(), code, name, color};
+        newRef.set(project, error => {
+            !error && dispatch({ type: ADD_PROJECT, payload: project });
         });
     };
 }
@@ -37,28 +45,30 @@ function addProject (code, name, color) {
 function editProject (id, code, name, color) {
     return dispatch => {
         const projectRef = projectsRef.child(id);
-        const project = {code, name, color};
+        const project = {id, code, name, color};
         projectRef.update(project, error => {
-            !error && dispatch({type: EDIT_PROJECT, id: id, ...project});
+            !error && dispatch({type: EDIT_PROJECT, payload: project});
         });
     };
 }
 
 function addSubProject (projectId, name, color) {
     return dispatch => {
-        const subProject = {projectId, name, color};
-        const newRef = subProjectsRef.push(subProject, error => {
-            !error && dispatch({type: ADD_SUB_PROJECT, id: newRef.key(), ...subProject});
+        const newRef = subProjectsRef.push();
+        const subProject = {id: newRef.key(), projectId, name, color};
+        projectsRef.child(projectId + '/subProjects/' + subProject.id).set(true);
+        newRef.set(subProject, error => {
+            !error && dispatch({type: ADD_SUB_PROJECT, payload: subProject});
         });
     };
 }
 
-function editSubProject (subProjectId, projectId, name, color) {
+function editSubProject (id, projectId, name, color) {
     return dispatch => {
-        const subProjectRef = subProjectsRef.child(subProjectId);
-        const subProject = {name, color};
+        const subProjectRef = subProjectsRef.child(id);
+        const subProject = {name, color, projectId, id};
         subProjectRef.update(subProject, error => {
-            !error && dispatch({type: EDIT_SUB_PROJECT, id: subProjectId, projectId: projectId, ...subProject});
+            !error && dispatch({type: EDIT_SUB_PROJECT, payload: subProject});
         });
     };
 }

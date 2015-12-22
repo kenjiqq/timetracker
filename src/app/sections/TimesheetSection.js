@@ -1,27 +1,33 @@
 import React, { PropTypes } from 'react';
 import Timesheet from '../components/Timesheet';
 import { connect } from 'react-redux';
+import {calendarSelector} from '../selectors/calendarSelectors';
+import {projectsSelector, subProjectsSelector} from '../selectors/projectSelectors';
+import {timeSlotsSelector} from '../selectors/timeslotSelectors';
 
 class TimesheetSection extends React.Component {
     static propTypes = {
         timeSlots: PropTypes.object.isRequired,
         calendar: PropTypes.object.isRequired,
-        projects: PropTypes.array.isRequired
+        projects: PropTypes.object.isRequired,
+        subProjects: PropTypes.object.isRequired
     }
 
     render () {
         return (
-            <Timesheet projects={this.props.projects} timeSlots={this.props.timeSlots} week={this.props.calendar.week}/>
+            <Timesheet projects={this.props.projects} subProjects={this.props.subProjects} timeSlots={this.props.timeSlots} week={this.props.calendar.week}/>
         );
     }
 };
 
 function select (state) {
-    return {
-        projects: state.projects.toJS(),
-        timeSlots: state.timeSlots.toJS(),
-        calendar: state.calendar.toJS()
-    };
+    return Object.assign(
+        {},
+        timeSlotsSelector(state),
+        projectsSelector(state),
+        subProjectsSelector(state),
+        calendarSelector(state)
+    );
 }
 
 export default connect(select)(TimesheetSection);
