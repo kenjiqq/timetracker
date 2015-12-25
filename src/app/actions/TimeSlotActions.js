@@ -7,7 +7,7 @@ let weekRef;
 
 export function init (_stores, userRef) {
     timeslotsRef = userRef.child('timeslots');
-    loadTimeSlots(moment().week(_stores.getState().calendar.get('week')).startOf('week'), moment().week(_stores.getState().calendar.get('week')).endOf('week'));
+    _stores.dispatch(loadTimeSlots(moment().week(_stores.getState().calendar.get('week')).startOf('week'), moment().week(_stores.getState().calendar.get('week')).endOf('week')));
 }
 
 export default {
@@ -21,7 +21,7 @@ export function loadTimeSlots (start, end) {
         weekRef.once('value', snapshot => {
             const timeSlotObj = snapshot.val() || {};
             const timeSlots = Object.keys(timeSlotObj).map(id => ({ id, ...timeSlotObj[id] }));
-            dispatch({type: ADD_TIME_SLOT_BATCH, items: timeSlots});
+            dispatch({type: ADD_TIME_SLOT_BATCH, payload: timeSlots});
         });
     };
 }
@@ -34,21 +34,21 @@ function checkOverlap (start1, end1, start2, end2) {
 function moveDay (id, from, to, start) {
     return (dispatch, getState) => {
         const timeSlots = getState()['timeSlots'].toJS();
-        const end = start + timeSlots[from].find(timeSlot => timeSlot.id === id).duration;
-        const toSlots = timeSlots[to];
-        const conflict = toSlots && toSlots.reduce(function (previous, timeSlot) {
-            return previous || checkOverlap(start, end, timeSlot.start, timeSlot.start + timeSlot.duration);
+        const curTimeSlot = timeSlots.items[id];
+        const conflict = (timeSlots.dates[to] || []).reduce(function (previous, timeSlotId) {
+            const timeSlot = timeSlots.items[timeSlotId];
+            return previous || checkOverlap(start, start + curTimeSlot.duration, timeSlot.start, timeSlot.start + timeSlot.duration);
         }, false);
 
         if (conflict || start < 0) {
             return false;
         }
-        const timeSlot = {
+        const data = {
             date: to,
             start
         };
-        timeslotsRef.child(id).update(timeSlot, error => {
-            !error && dispatch({type: EDIT_TIME_SLOT, id, ...timeSlot});
+        timeslotsRef.child(id).update(data, error => {
+            !error && dispatch({type: EDIT_TIME_SLOT, payload: {id, ...data}});
         });
     };
 }
@@ -56,19 +56,19 @@ function moveDay (id, from, to, start) {
 function setDuration (id, date, duration) {
     return (dispatch, getState) => {
         const timeSlots = getState()['timeSlots'].toJS();
-        const start = timeSlots[date].find(timeSlot => timeSlot.id === id).start;
-        const toSlots = timeSlots[date];
-        const conflict = toSlots && toSlots.reduce(function (previous, timeSlot) {
-            if (timeSlot.id === id) {
+        const curTimeSlot = timeSlots.items[id];
+        const conflict = (timeSlots[curTimeSlot.date] || []).reduce(function (previous, timeSlotId) {
+            if (timeSlotId === id) {
                 return previous;
             }
-            return previous || checkOverlap(start, start + duration, timeSlot.start, timeSlot.start + timeSlot.duration);
+            const timeSlot = timeSlots.items[timeSlotId];
+            return previous || checkOverlap(curTimeSlot.start, curTimeSlot.start + duration, timeSlot.start, timeSlot.start + timeSlot.duration);
         }, false);
-        if (conflict || start < 0) {
+        if (conflict || curTimeSlot.start < 0) {
             return false;
         }
         timeslotsRef.child(id).update({duration}, error => {
-            !error && dispatch({type: EDIT_TIME_SLOT, id, duration});
+            !error && dispatch({type: EDIT_TIME_SLOT, payload: {id, duration}});
         });
     };
 }
@@ -76,23 +76,23 @@ function setDuration (id, date, duration) {
 function setStartHour (id, date, startHour) {
     return (dispatch, getState) => {
         const timeSlots = getState()['timeSlots'].toJS();
-        const end = startHour + timeSlots[date].find(timeSlot => timeSlot.id === id).duration;
-        const toSlots = timeSlots[date];
-        const conflict = toSlots && toSlots.reduce(function (previous, timeSlot) {
-            if (timeSlot.id === id) {
+        const curTimeSlot = timeSlots.items[id];
+        const conflict = (timeSlots.dates[curTimeSlot.date] || []).reduce(function (previous, timeSlotId) {
+            if (timeSlotId === id) {
                 return previous;
             }
-            return previous || checkOverlap(startHour, end, timeSlot.start, timeSlot.start + timeSlot.duration);
+            const timeSlot = timeSlots.dates[date];
+            return previous || checkOverlap(startHour, startHour + curTimeSlot.duration, timeSlot.start, timeSlot.start + timeSlot.duration);
         }, false);
         if (conflict || startHour < 0) {
             return false;
         }
 
-        const timeSlot = {
+        const data = {
             start: startHour
         };
-        timeslotsRef.child(id).update(timeSlot, error => {
-            !error && dispatch({type: EDIT_TIME_SLOT, id, ...timeSlot});
+        timeslotsRef.child(id).update(data, error => {
+            !error && dispatch({type: EDIT_TIME_SLOT, payload: {id, ...data}});
         });
     };
 }
@@ -100,17 +100,18 @@ function setStartHour (id, date, startHour) {
 function addTimeSlot (project, subProject, activity, date, start, duration) {
     return (dispatch, getState) => {
         const timeSlots = getState()['timeSlots'].toJS();
-        const toSlots = timeSlots[date];
-        const conflict = toSlots && toSlots.reduce(function (previous, timeSlot) {
+        const conflict = (timeSlots.dates[date] || []).reduce(function (previous, timeSlotId) {
+            const timeSlot = timeSlots.items[timeSlotId];
             return previous || checkOverlap(start, start + duration, timeSlot.start, timeSlot.start + timeSlot.duration);
         }, false);
+
         if (conflict || start < 0) {
             return false;
         }
         const newRef = timeslotsRef.push();
         const timeSlot = {id: newRef.key(), project, subProject, activity, date, start, duration};
         newRef.set(timeSlot, error => {
-            !error && dispatch({type: ADD_TIME_SLOT, ...timeSlot});
+            !error && dispatch({type: ADD_TIME_SLOT, payload: {...timeSlot}});
         });
     };
 }

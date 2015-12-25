@@ -3,7 +3,7 @@ import Timesheet from '../components/Timesheet';
 import { connect } from 'react-redux';
 import {calendarSelector} from '../selectors/calendarSelectors';
 import {projectsSelector, subProjectsSelector} from '../selectors/projectSelectors';
-import {timeSlotsSelector} from '../selectors/timeslotSelectors';
+import {timeSlotsByDateSelector} from '../selectors/timeslotSelectors';
 
 class TimesheetSection extends React.Component {
     static propTypes = {
@@ -23,7 +23,7 @@ class TimesheetSection extends React.Component {
 function select (state) {
     return Object.assign(
         {},
-        timeSlotsSelector(state),
+        timeSlotsByDateSelector(state),
         projectsSelector(state),
         subProjectsSelector(state),
         calendarSelector(state)

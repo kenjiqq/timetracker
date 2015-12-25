@@ -1,54 +1,57 @@
 'use strict';
 import {ADD_TIME_SLOT, EDIT_TIME_SLOT, CLEAR_TIME_SLOTS, ADD_TIME_SLOT_BATCH} from '../constants/ActionTypes';
-import {Map, List} from 'immutable';
+import {Map, fromJS, List} from 'immutable';
 
-function createTimeSlot ({id, project, subProject, activity, start, duration}) {
+function initialState () {
+    return fromJS({
+        items: {},
+        dates: {}
+    });
+}
+
+function createTimeSlot ({id, project, subProject, activity, start, duration, date}) {
     return Map({
         id,
         project,
         subProject,
         activity,
         start,
-        duration
+        duration,
+        date
     });
 }
 
-const initialState = Map();
-
-export default function timeSlots (state = initialState, action) {
+export default function timeSlots (state = initialState(), action) {
     if (!action) {
         return state;
     }
-    switch (action.type) {
+    const {payload, type} = action;
+    switch (type) {
     case ADD_TIME_SLOT_BATCH:
-        return action.items.reduce((state, timeSlot) => {
-            return state.update(timeSlot.date, List(), date => date.push(createTimeSlot(timeSlot)));
-        }, state);
-    case ADD_TIME_SLOT:
-        const newSlot = createTimeSlot(action);
-        return state.update(action.date, List(), date => date.push(newSlot));
-    case EDIT_TIME_SLOT:
-        let slotIndex;
-        let date;
-        let timeSlot;
-        state.forEach((list, _date) => {
-            slotIndex = list.findIndex(timeSlot => timeSlot.get('id') === action.id);
-            if (slotIndex !== -1) {
-                date = _date;
-                timeSlot = list.get(slotIndex);
-                return false;
-            }
-        });
-        if (action.date && date !== action.date) {
-            return state.withMutations(map => {
-                map.deleteIn([date, slotIndex]).update(action.date, List(), dateList => dateList.push(timeSlot));
+        return state.withMutations(state => {
+            payload.forEach(timeSlot => {
+                state.updateIn(['dates', timeSlot.date], List(), date => date.push(timeSlot.id));
+                state.setIn(['items', timeSlot.id], createTimeSlot(timeSlot));
             });
-        }
-        const {id, type, ...changes} = action;
-        return state.updateIn([date, state.get(date).findIndex(timeSlot => timeSlot.get('id') === action.id)],
-        Map(), timeSlot => timeSlot.merge(changes));
+        });
+    case ADD_TIME_SLOT:
+        const newSlot = createTimeSlot(payload);
+        return state.withMutations(state => {
+            state.updateIn(['dates', newSlot.date], List(), date => date.push(newSlot.id));
+            state.setIn(['items', newSlot.id], newSlot);
+        });
+    case EDIT_TIME_SLOT:
+        const curSlot = state.getIn(['items', payload.id]);
+        return state.withMutations(state => {
+            if (payload.date && payload.date !== curSlot.get('date')) {
+                state.updateIn(['dates', curSlot.get('date')], List(), date => date.delete(date.indexOf(payload.id)));
+                state.updateIn(['dates', payload.date], List(), date => date.push(payload.id));
+            }
+            state.updateIn(['items', payload.id], timeSlot => timeSlot.merge(payload));
+        });
+
     case CLEAR_TIME_SLOTS:
-        return Map();
+        return initialState();
     default:
         return state;
     }
