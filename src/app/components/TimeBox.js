@@ -47,7 +47,8 @@ export class TimeBoxExisting extends Component {
         setDuration: PropTypes.func.isRequired,
         start: PropTypes.number.isRequired,
         hourSize: PropTypes.number.isRequired,
-        duration: PropTypes.number.isRequired
+        duration: PropTypes.number.isRequired,
+        deleteTimeSlot: PropTypes.func.isRequired
     }
 
     state = {
@@ -123,8 +124,28 @@ export class TimeBoxExisting extends Component {
         });
     }
 
+    handleMouseLeave = () => {
+        this.setState({showDelete: false});
+    }
+
+    handleMouseEnter = () => {
+        this.setState({showDelete: true});
+    }
+
+    handleDeleteClick = () => {
+        this.props.deleteTimeSlot(this.props.id);
+    }
+
     componentWillUnmount () {
         this.mounted = false;
+    }
+
+    renderDeleteButton () {
+        if (this.state.showDelete) {
+            return (
+                <button className='btn btn-link delete' onClick={this.handleDeleteClick}>X</button>
+            );
+        }
     }
 
     render () {
@@ -146,7 +167,8 @@ export class TimeBoxExisting extends Component {
         };
 
         return (
-            <li ref='box' className='timebox-container' style={style} {...dataAttrs}>
+            <li ref='box' className='timebox-container' style={style} {...dataAttrs} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+                {this.renderDeleteButton()}
                 <TimeBox {...rest} duration={this.state.duration || duration} />
             </li>
         );

@@ -1,5 +1,5 @@
 'use strict';
-import {ADD_TIME_SLOT, EDIT_TIME_SLOT, CLEAR_TIME_SLOTS, ADD_TIME_SLOT_BATCH} from '../constants/Actiontypes';
+import {ADD_TIME_SLOT, EDIT_TIME_SLOT, CLEAR_TIME_SLOTS, ADD_TIME_SLOT_BATCH, REMOVE_TIME_SLOT} from '../constants/Actiontypes';
 import moment from 'moment';
 
 let timeslotsRef;
@@ -11,7 +11,7 @@ export function init (_stores, userRef) {
 }
 
 export default {
-    loadTimeSlots, moveDay, setDuration, setStartHour, addTimeSlot
+    loadTimeSlots, moveDay, setDuration, setStartHour, addTimeSlot, deleteTimeSlot
 };
 
 export function loadTimeSlots (start, end) {
@@ -21,7 +21,9 @@ export function loadTimeSlots (start, end) {
         weekRef.once('value', snapshot => {
             const timeSlotObj = snapshot.val() || {};
             const timeSlots = Object.keys(timeSlotObj).map(id => ({ id, ...timeSlotObj[id] }));
-            dispatch({type: ADD_TIME_SLOT_BATCH, payload: timeSlots});
+            if (timeSlots && timeSlots.length > 0) {
+                dispatch({type: ADD_TIME_SLOT_BATCH, payload: timeSlots});
+            }
         });
     };
 }
@@ -112,6 +114,14 @@ function addTimeSlot (project, subProject, activity, date, start, duration) {
         const timeSlot = {id: newRef.key(), project, subProject, activity, date, start, duration};
         newRef.set(timeSlot, error => {
             !error && dispatch({type: ADD_TIME_SLOT, payload: {...timeSlot}});
+        });
+    };
+}
+
+function deleteTimeSlot (id) {
+    return (dispatch) => {
+        timeslotsRef.child(id).remove(error => {
+            !error && dispatch({type: REMOVE_TIME_SLOT, payload: {id: id}});
         });
     };
 }

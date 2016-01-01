@@ -1,5 +1,5 @@
 'use strict';
-import {ADD_TIME_SLOT, EDIT_TIME_SLOT, CLEAR_TIME_SLOTS, ADD_TIME_SLOT_BATCH} from '../constants/ActionTypes';
+import {ADD_TIME_SLOT, EDIT_TIME_SLOT, CLEAR_TIME_SLOTS, ADD_TIME_SLOT_BATCH, REMOVE_TIME_SLOT} from '../constants/ActionTypes';
 import {Map, fromJS, List} from 'immutable';
 
 function initialState () {
@@ -37,8 +37,8 @@ export default function timeSlots (state = initialState(), action) {
     case ADD_TIME_SLOT:
         const newSlot = createTimeSlot(payload);
         return state.withMutations(state => {
-            state.updateIn(['dates', newSlot.date], List(), date => date.push(newSlot.id));
-            state.setIn(['items', newSlot.id], newSlot);
+            state.updateIn(['dates', newSlot.get('date')], List(), date => date.push(newSlot.get('id')));
+            state.setIn(['items', newSlot.get('id')], newSlot);
         });
     case EDIT_TIME_SLOT:
         const curSlot = state.getIn(['items', payload.id]);
@@ -48,6 +48,12 @@ export default function timeSlots (state = initialState(), action) {
                 state.updateIn(['dates', payload.date], List(), date => date.push(payload.id));
             }
             state.updateIn(['items', payload.id], timeSlot => timeSlot.merge(payload));
+        });
+    case REMOVE_TIME_SLOT:
+        return state.withMutations(state => {
+            var curDate = state.getIn(['items', payload.id, 'date']);
+            state.updateIn(['dates', curDate], List(), date => date.delete(date.indexOf(payload.id)));
+            state.deleteIn(['items', payload.id]);
         });
 
     case CLEAR_TIME_SLOTS:

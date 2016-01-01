@@ -15,6 +15,7 @@ export default class DayColumn extends Component {
         name: PropTypes.string.isRequired,
         moveDay: PropTypes.func.isRequired,
         addTimeSlot: PropTypes.func.isRequired,
+        deleteTimeSlot: PropTypes.func.isRequired,
         setStartHour: PropTypes.func.isRequired,
         setDuration: PropTypes.func.isRequired,
         hourSize: PropTypes.number.isRequired
@@ -91,7 +92,8 @@ export default class DayColumn extends Component {
                 duration: timeSlot.duration,
                 start: timeSlot.start,
                 id: timeSlot.id,
-                setDuration: this.props.setDuration
+                setDuration: this.props.setDuration,
+                deleteTimeSlot: this.props.deleteTimeSlot
             };
             return (
                 <TimeBoxExisting key={timeSlot.id} {...props} />

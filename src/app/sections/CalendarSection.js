@@ -20,6 +20,7 @@ class CalendarSection extends React.Component {
         subProjects: PropTypes.object.isRequired,
         moveDay: PropTypes.func.isRequired,
         addTimeSlot: PropTypes.func.isRequired,
+        deleteTimeSlot: PropTypes.func.isRequired,
         setStartHour: PropTypes.func.isRequired,
         setDuration: PropTypes.func.isRequired,
         changeWeek: PropTypes.func.isRequired
@@ -56,6 +57,7 @@ class CalendarSection extends React.Component {
             const actions = {
                 moveDay: this.props.moveDay,
                 addTimeSlot: this.props.addTimeSlot,
+                deleteTimeSlot: this.props.deleteTimeSlot,
                 setStartHour: this.props.setStartHour,
                 setDuration: this.props.setDuration
             };
